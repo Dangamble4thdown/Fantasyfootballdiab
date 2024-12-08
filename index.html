@@ -3,59 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Football League</title>
+    <title>Diab Fantasy Football League Official Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1e1e2f;
+            background: linear-gradient(135deg, #1e1e2f, #3f51b5);
             color: #dcdcdc;
         }
 
         header {
-            background-color: #3f51b5;
+            background-color: rgba(63, 81, 181, 0.9);
             color: #fff;
-            padding: 1rem 0;
+            padding: 1.5rem 0;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 2rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         nav {
             display: flex;
             justify-content: center;
-            background-color: #2c2c3c;
-            padding: 0.5rem 0;
+            background-color: rgba(44, 44, 60, 0.9);
+            padding: 0.8rem 0;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         nav a {
             color: #dcdcdc;
             text-decoration: none;
             margin: 0 1rem;
-            padding: 0.5rem 1rem;
+            padding: 0.7rem 1.2rem;
             border-radius: 5px;
+            font-weight: 500;
             transition: background 0.3s, color 0.3s;
         }
 
         nav a:hover {
-            background-color: #3f51b5;
+            background-color: #ff4081;
             color: #fff;
         }
 
         main {
-            padding: 2rem;
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         footer {
             text-align: center;
-            padding: 1rem;
-            background-color: #3f51b5;
+            padding: 1.5rem;
+            background-color: rgba(63, 81, 181, 0.9);
             color: #fff;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: 400;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+            margin-top: 3rem;
         }
 
         .login {
@@ -65,44 +73,73 @@
 
         .login a {
             text-decoration: none;
-            color: #3f51b5;
-            font-weight: bold;
+            color: #ff4081;
+            font-weight: 600;
             transition: color 0.3s;
         }
 
         .login a:hover {
-            color: #ff4081;
+            color: #fff;
         }
 
         .content-section {
-            background: #2c2c3c;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            background: rgba(44, 44, 60, 0.9);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .content-section:hover {
+            transform: translateY(-5px);
         }
 
         .content-section h2 {
             color: #ff4081;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
         }
 
         img.gallery, img {
             width: 100%;
             height: auto;
-            border-radius: 8px;
-            border: 2px solid #3f51b5;
+            border-radius: 10px;
+            border: 3px solid #3f51b5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         iframe {
-            border: 2px solid #3f51b5;
-            border-radius: 8px;
+            border: 3px solid #3f51b5;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            margin-top: 1rem;
+            background: #ff4081;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #e91e63;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Fantasy Football League</h1>
+    Diab Fantasy Football League
 </header>
 
 <div class="login">
@@ -111,17 +148,17 @@
 
 <nav>
     <a href="#home">Home</a>
-    <a href="#rules">Rules</a>
+    <a href="#rules">Rulebook</a>
     <a href="#standings">Standings</a>
     <a href="#stats">Stats</a>
     <a href="#playoff">Playoff Picture</a>
-    <a href="#champion">Champion</a>
+    <a href="#champion">Champion-2024</a>
 </nav>
 
 <main>
     <section id="home" class="content-section">
-        <h2>Welcome to the Fantasy Football League</h2>
-        <p>Join the excitement and compete for the ultimate title of Fantasy Champion!</p>
+        <h2>Welcome to the 2024 Diab Fantasy Football League Season</h2>
+        <p>Join the excitement and compete for the ultimate title of being crowned as this season's Champion!</p>
     </section>
 
     <section id="rules" class="content-section">
@@ -132,7 +169,7 @@
     <section id="standings" class="content-section">
         <h2>Standings</h2>
         <p>Check the current rankings of all participants in the league.</p>
-        <img src="C:\Users\louis\OneDrive - University of Windsor\Pictures\Screenshots\Screenshot 2024-12-08 145704.png" alt="Standings">
+        <img src="file:///C:/Users/louis/Downloads/Screenshot%202024-12-08%20145502.png">
     </section>
 
     <section id="stats" class="content-section">
@@ -142,19 +179,20 @@
 
     <section id="playoff" class="content-section">
         <h2>Playoff Picture</h2>
-        <p>Stay updated on the teams advancing to the playoffs.</p>
-        <img src="C:\Users\louis\OneDrive - University of Windsor\Pictures\Screenshots\Screenshot 2024-12-08 145704.png" alt="Playoff Bracket">
+        <p>If the season ended today, this is who would be in.</p>
+        <img src="file:///C:/Users/louis/Downloads/Screenshot%202024-12-08%20145704.png">
     </section>
 
     <section id="champion" class="content-section">
         <h2>Champion</h2>
         <p>Celebrate the league champion and their achievements!</p>
-        <img class="gallery" src="champion.jpg" alt="Champion Gallery">
+        <img class="gallery" src="champion.jpg" alt="Champion Gallery" onerror="this.src='placeholder.png';">
+        <a href="#" class="button">View More</a>
     </section>
 </main>
 
 <footer>
-    <p>&copy; 2024 Fantasy Football League. All rights reserved.</p>
+    &copy; 2024 Diab Fantasy Football League. All rights reserved.
 </footer>
 
 </body>
