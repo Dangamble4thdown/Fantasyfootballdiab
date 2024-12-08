@@ -3,9 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diab Fantasy Football League Official Page</title>
+    <title>Diab Fantasy Football League</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav a {
+                margin: 0.5rem 0;
+            }
+
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            header {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav a {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .content-section h2 {
+                font-size: 1.5rem;
+            }
+        }
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -139,7 +172,7 @@
 <body>
 
 <header>
-    Diab Fantasy Football League
+    Fantasy Football League
 </header>
 
 <div class="login">
@@ -148,17 +181,17 @@
 
 <nav>
     <a href="#home">Home</a>
-    <a href="#rules">Rulebook</a>
+    <a href="#rules">Rules</a>
     <a href="#standings">Standings</a>
     <a href="#stats">Stats</a>
     <a href="#playoff">Playoff Picture</a>
-    <a href="#champion">Champion-2024</a>
+    <a href="#champion">Champion</a>
 </nav>
 
 <main>
     <section id="home" class="content-section">
-        <h2>Welcome to the 2024 Diab Fantasy Football League Season</h2>
-        <p>Join the excitement and compete for the ultimate title of being crowned as this season's Champion!</p>
+        <h2>Welcome to the Fantasy Football League</h2>
+        <p>Join the excitement and compete for the ultimate title of Fantasy Champion!</p>
     </section>
 
     <section id="rules" class="content-section">
@@ -169,8 +202,7 @@
     <section id="standings" class="content-section">
         <h2>Standings</h2>
         <p>Check the current rankings of all participants in the league.</p>
-        <img src=""https://media-hosting.imagekit.io//05a3b3d85cef4fba/Screenshot%202024-12-08%20145704.png?Expires=1733862924&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=E~t83AegYKY8vurSGWWicsJZhcN6QecSKkkEWVOVKvYdAzetdfj-LiuFKgNnZCdXEPEbSi0~92YojarAMH5GgheUamrfLyKHfya1nvZIu~CNBcysaFI~mMQ2Lv6w3wnmZypXKM1TPoLU6VnZqwhsB5V3rjuqfO5UKU0yc3jzg~MW~CZ9y3bXR-XWzLpRXr9KkAfVqXG6ZAFNAMPkhtui8l1H3PPJd7v8IA2EE1k9B9TMaYahSQFeEGvYXGBT3ElsatVNq2UU~AUE3EBt68vD~S4ul~z-ghjP1ENG4bzbuJqc2wuLx~yh8fOrzUP3IkjdmgTXlnQZX5fOdYbL9R-iTA__" alt="Standings"> 
-    </section> 
+        <img src="https://media-hosting.imagekit.io//05a3b3d85cef4fba/Screenshot%202024-12-08%20145704.png?Expires=1733862924&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=E~t83AegYKY8vurSGWWicsJZhcN6QecSKkkEWVOVKvYdAzetdfj-LiuFKgNnZCdXEPEbSi0~92YojarAMH5GgheUamrfLyKHfya1nvZIu~CNBcysaFI~mMQ2Lv6w3wnmZypXKM1TPoLU6VnZqwhsB5V3rjuqfO5UKU0yc3jzg~MW~CZ9y3bXR-XWzLpRXr9KkAfVqXG6ZAFNAMPkhtui8l1H3PPJd7v8IA2EE1k9B9TMaYahSQFeEGvYXGBT3ElsatVNq2UU~AUE3EBt68vD~S4ul~z-ghjP1ENG4bzbuJqc2wuLx~yh8fOrzUP3IkjdmgTXlnQZX5fOdYbL9R-iTA__" alt="Standings">
     </section>
 
     <section id="stats" class="content-section">
@@ -180,8 +212,8 @@
 
     <section id="playoff" class="content-section">
         <h2>Playoff Picture</h2>
-        <p>If the season ended today, this is who would be in.</p>
-        <img src="https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202024-12-08%20145704.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222024-12-10T20%3A35%3A24.314Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2F%2F05a3b3d85cef4fba%2FScreenshot%25202024-12-08%2520145704.png%3FExpires%3D1733862924%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3DE~t83AegYKY8vurSGWWicsJZhcN6QecSKkkEWVOVKvYdAzetdfj-LiuFKgNnZCdXEPEbSi0~92YojarAMH5GgheUamrfLyKHfya1nvZIu~CNBcysaFI~mMQ2Lv6w3wnmZypXKM1TPoLU6VnZqwhsB5V3rjuqfO5UKU0yc3jzg~MW~CZ9y3bXR-XWzLpRXr9KkAfVqXG6ZAFNAMPkhtui8l1H3PPJd7v8IA2EE1k9B9TMaYahSQFeEGvYXGBT3ElsatVNq2UU~AUE3EBt68vD~S4ul~z-ghjP1ENG4bzbuJqc2wuLx~yh8fOrzUP3IkjdmgTXlnQZX5fOdYbL9R-iTA__%22%7D">
+        <p>Stay updated on the teams advancing to the playoffs.</p>
+        <img src="https://media-hosting.imagekit.io//05a3b3d85cef4fba/Screenshot%202024-12-08%20145704.png?Expires=1733862924&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=E~t83AegYKY8vurSGWWicsJZhcN6QecSKkkEWVOVKvYdAzetdfj-LiuFKgNnZCdXEPEbSi0~92YojarAMH5GgheUamrfLyKHfya1nvZIu~CNBcysaFI~mMQ2Lv6w3wnmZypXKM1TPoLU6VnZqwhsB5V3rjuqfO5UKU0yc3jzg~MW~CZ9y3bXR-XWzLpRXr9KkAfVqXG6ZAFNAMPkhtui8l1H3PPJd7v8IA2EE1k9B9TMaYahSQFeEGvYXGBT3ElsatVNq2UU~AUE3EBt68vD~S4ul~z-ghjP1ENG4bzbuJqc2wuLx~yh8fOrzUP3IkjdmgTXlnQZX5fOdYbL9R-iTA__" alt="Playoff Bracket">
     </section>
 
     <section id="champion" class="content-section">
