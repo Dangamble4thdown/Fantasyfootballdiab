@@ -7,8 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #3f51b5;
-            --secondary-color: #ff4081;
+            --primary-color: #ffffff;
+            --secondary-color: #000000;
             --background-gradient: linear-gradient(135deg, #1e1e2f, var(--primary-color));
             --text-color: var(--text-color);
             --header-font: 'Poppins', sans-serif;
@@ -50,7 +50,7 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background: var(--background-gradient);
+            background: var(--primary-color); color: var(--secondary-color);
             color: #dcdcdc;
         }
 
@@ -188,7 +188,7 @@
 </header>
 
 <div class="login">
-    <a href="#">Login</a>
+    <a href="#" onclick="showFireworks()">Login</a>
 </div>
 
 <nav>
@@ -258,6 +258,54 @@
             header.style.boxShadow = 'none';
         }
     });
+</script>
+<script>
+    function showFireworks() {
+        const body = document.querySelector('body');
+        const fireworksContainer = document.createElement('div');
+        fireworksContainer.style.position = 'fixed';
+        fireworksContainer.style.top = 0;
+        fireworksContainer.style.left = 0;
+        fireworksContainer.style.width = '100%';
+        fireworksContainer.style.height = '100%';
+        fireworksContainer.style.pointerEvents = 'none';
+        fireworksContainer.style.zIndex = 1000;
+
+        for (let i = 0; i < 20; i++) {
+            const firework = document.createElement('div');
+            firework.style.position = 'absolute';
+            firework.style.background = 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,0,0,0.8) 50%, rgba(0,0,0,0) 100%)';
+            firework.style.borderRadius = '50%';
+            firework.style.width = '20px';
+            firework.style.height = '20px';
+            firework.style.opacity = Math.random();
+            firework.style.left = `${Math.random() * 100}%`;
+            firework.style.top = `${Math.random() * 100}%`;
+            firework.style.animation = 'explode 1s ease-out forwards';
+            fireworksContainer.appendChild(firework);
+
+            setTimeout(() => firework.remove(), 1000);
+        }
+
+        body.appendChild(fireworksContainer);
+
+        setTimeout(() => fireworksContainer.remove(), 2000);
+    }
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(5);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 </script>
 </body>
 </html>
