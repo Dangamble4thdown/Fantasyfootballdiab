@@ -14,13 +14,6 @@
             --neon-glow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 30px #00d4ff;
         }
 
-        /* Reset Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
             background: var(--background-gradient);
@@ -28,7 +21,6 @@
             overflow-x: hidden;
         }
 
-        /* Background Video and Effects */
         #background-video {
             position: fixed;
             top: 0;
@@ -40,27 +32,6 @@
             filter: brightness(40%);
         }
 
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background: radial-gradient(circle at center, rgba(0, 212, 255, 0.3), transparent);
-            animation: moveParticles 10s infinite linear;
-        }
-
-        @keyframes moveParticles {
-            0% {
-                background-position: 0% 0%;
-            }
-            100% {
-                background-position: 100% 100%;
-            }
-        }
-
-        /* Header */
         header {
             text-align: center;
             padding: 1.5rem 0;
@@ -74,13 +45,11 @@
             z-index: 1000;
         }
 
-        /* Navigation Bar */
         nav {
             display: flex;
             justify-content: center;
             background-color: rgba(44, 44, 60, 0.9);
             padding: 0.8rem 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -92,7 +61,7 @@
             margin: 0 1rem;
             padding: 0.7rem 1.2rem;
             font-weight: 500;
-            position: relative;
+            cursor: pointer;
             transition: color 0.3s, transform 0.3s ease;
         }
 
@@ -102,66 +71,29 @@
             transform: scale(1.1);
         }
 
-        /* Content Section */
         .content-section {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.1);
+            display: none; /* Initially hidden */
             padding: 2rem;
             margin: 2rem auto;
             max-width: 80%;
             border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .content-section:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 12px 50px rgba(0, 0, 0, 0.8);
+        .content-section.active {
+            display: block; /* Show only active section */
         }
 
-        .content-section h2 {
-            color: var(--secondary-color);
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Buttons */
-        .button {
-            display: inline-block;
-            padding: 0.7rem 1.5rem;
-            margin-top: 1rem;
-            background: var(--primary-color);
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 500;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s ease;
-            box-shadow: var(--neon-glow);
-        }
-
-        .button:hover {
-            background: #00a3d1;
-            transform: translateY(-5px);
-        }
-
-        /* Footer */
         footer {
             text-align: center;
             padding: 1.5rem;
             background-color: rgba(44, 44, 60, 0.9);
             color: var(--text-color);
             margin-top: 3rem;
-        }
-
-        /* Media Queries */
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-            }
         }
     </style>
 </head>
@@ -170,32 +102,79 @@
         <source src="https://www.example.com/video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-    <div class="particles"></div>
 
     <header>
         Diab Fantasy Football League
     </header>
 
     <nav>
-        <a href="#home" class="active">Home</a>
-        <a href="#rules">Rules</a>
-        <a href="#standings">Standings</a>
-        <a href="#stats">Stats</a>
-        <a href="#playoff">Playoff</a>
-        <a href="#champion">Champion</a>
+        <a href="#home" data-target="home" class="active">Home</a>
+        <a href="#rules" data-target="rules">Rules</a>
+        <a href="#standings" data-target="standings">Standings</a>
+        <a href="#stats" data-target="stats">Stats</a>
+        <a href="#playoff" data-target="playoff">Playoff</a>
+        <a href="#champion" data-target="champion">Champion</a>
     </nav>
 
     <main>
-        <section id="home" class="content-section">
+        <section id="home" class="content-section active">
             <h2>Welcome to the Future of Fantasy Football</h2>
             <p>Compete in a high-tech, thrilling league experience. Are you ready?</p>
         </section>
 
-        <!-- Other sections like #rules, #standings, etc., go here -->
+        <section id="rules" class="content-section">
+            <h2>League Rules</h2>
+            <p>Read all the official rules and regulations here.</p>
+        </section>
+
+        <section id="standings" class="content-section">
+            <h2>Standings</h2>
+            <p>See the latest rankings and who's leading the league.</p>
+        </section>
+
+        <section id="stats" class="content-section">
+            <h2>Player Stats</h2>
+            <p>Track your favorite players' performance.</p>
+        </section>
+
+        <section id="playoff" class="content-section">
+            <h2>Playoff Picture</h2>
+            <p>Get the latest updates on the playoff brackets.</p>
+        </section>
+
+        <section id="champion" class="content-section">
+            <h2>Champion Spotlight</h2>
+            <p>Relive the glory of our past champions.</p>
+        </section>
     </main>
 
     <footer>
         &copy; 2024 Diab Fantasy Football League. All rights reserved.
     </footer>
+
+    <script>
+        // Select all navigation links and content sections
+        const navLinks = document.querySelectorAll('nav a');
+        const sections = document.querySelectorAll('.content-section');
+
+        // Function to handle navigation
+        function handleNavigation(event) {
+            event.preventDefault();
+
+            // Remove active class from all links and sections
+            navLinks.forEach(link => link.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Add active class to the clicked link and its corresponding section
+            const targetId = event.target.getAttribute('data-target');
+            event.target.classList.add('active');
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        // Attach event listeners to all navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', handleNavigation);
+        });
+    </script>
 </body>
 </html>
