@@ -3,65 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diab Fantasy Football League</title>
+    <title>Cousins Fantasy Football League</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #ffffff;
-            --secondary-color: #000000;
-            --background-gradient: linear-gradient(135deg, #1e1e2f, var(--primary-color));
-            --text-color: var(--text-color);
+            --primary-color: #8b0000; /* Warm red for Christmas theme */
+            --secondary-color: #228b22; /* Green for Christmas theme */
+            --background-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --text-color: #fff;
             --header-font: 'Poppins', sans-serif;
         }
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-                align-items: center;
-            }
 
-            nav a {
-                margin: 0.5rem 0;
-            }
-
-            main {
-                padding: 1.5rem 1rem;
-            }
-
-            .content-section {
-                padding: 1.5rem;
-            }
-
-            header {
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            nav a {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            .content-section h2 {
-                font-size: 1.5rem;
-            }
-        }
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background: var(--primary-color); color: var(--secondary-color);
-            color: #dcdcdc;
+            background: var(--background-gradient);
+            color: var(--text-color);
         }
 
         header {
-            background-color: rgba(63, 81, 181, 0.9);
+            background-color: var(--primary-color);
             color: #fff;
             padding: 1.5rem 0;
             text-align: center;
             font-size: 2rem;
             font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header img {
+            height: 50px;
         }
 
         nav {
@@ -69,243 +44,4 @@
             justify-content: center;
             background-color: rgba(44, 44, 60, 0.9);
             padding: 0.8rem 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav a {
-            color: #dcdcdc;
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.7rem 1.2rem;
-            border-radius: 5px;
-            font-weight: 500;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        nav a:hover {
-            background-color: #ff4081;
-            color: #fff;
-        }
-
-        main {
-            padding: 3rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        footer {
-            text-align: center;
-            padding: 1.5rem;
-            background-color: rgba(63, 81, 181, 0.9);
-            color: #fff;
-            font-weight: 400;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
-            margin-top: 3rem;
-        }
-
-        .login {
-            text-align: right;
-            margin: 1rem;
-        }
-
-        .login a {
-            text-decoration: none;
-            color: #ff4081;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-
-        .login a:hover {
-            color: #fff;
-        }
-
-        .content-section {
-            background: rgba(44, 44, 60, 0.9);
-            padding: 2rem;
-            margin: 1.5rem 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            color: #fff;
-            transition: transform 0.3s ease;
-        }
-
-        .content-section:hover {
-            transform: translateY(-5px);
-        }
-
-        .content-section h2 {
-            color: #ff4081;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        img.gallery, img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            border: 3px solid #3f51b5;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        iframe {
-            border: 3px solid #3f51b5;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .button {
-            display: inline-block;
-            padding: 0.7rem 1.5rem;
-            margin-top: 1rem;
-            background: #ff4081;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 500;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .button:hover {
-            background: #e91e63;
-        }
-    </style>
-</head>
-<body>
-<video autoplay muted loop id="background-video" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
-    <source src="https://www.bing.com/ck/a?!&&p=d0ac6449ac9b79ea7010306e5435a5942aab460b372db7c99bb63ca89424bf79JmltdHM9MTczMzcwMjQwMA&ptn=3&ver=2&hsh=4&fclid=1289bf3f-ae98-63f1-36a0-aa7faf326270&psq=dan+campbell+locker+room+speech&u=a1aHR0cHM6Ly9lbi5hcy5jb20vdmlkZW9zL2Rhbi1jYW1wYmVsbHMtZmllcnktbG9ja2VyLXJvb20tc3BlZWNoLWFtaWQtcGxheWVyLXRocm93aW5nLXVwLXNwYXJrcy12aXJhbC1zZW5zYXRpb24tdi8&ntb=1" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
-
-<header id="top">
-    Fantasy Football League
-<button onclick="scrollToSection('#home')" style="position: absolute; top: 1rem; right: 1rem; background: var(--secondary-color); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">Home</button>
-</header>
-
-<div class="login">
-    <a href="#" onclick="showFireworks()">Login</a>
-</div>
-
-<nav>
-    <a href="#home">Home</a>
-    <a href="#rules">Rules</a>
-    <a href="#standings">Standings</a>
-    <a href="#stats">Stats</a>
-    <a href="#playoff">Playoff Picture</a>
-    <a href="#champion">Champion</a>
-</nav>
-
-<main>
-    <section id="home" class="content-section">
-        <h2>Welcome to the Fantasy Football League</h2>
-        <p>Join the excitement and compete for the ultimate title of Fantasy Champion!</p>
-    </section>
-
-    <section id="rules" class="content-section">
-        <h2>League Rules</h2>
-        <iframe src="https://docs.google.com/document/d/e/2PACX-1vTkFlha5UmqF9QZAD-EkG8VktD4DjIQFTro9BYF7T5Vp8PF0GgfWiNlM-BDuOKEDkq91uiQTVt7sSET/pub?embedded=true" style="width: 100%; height: 500px; max-width: 100%;" sandbox="allow-same-origin allow-scripts"></iframe>
-    </section>
-
-    <section id="standings" class="content-section">
-        <h2>Standings</h2>
-        <p>Check the current rankings of all participants in the league.</p>
-        <img src="https://media-hosting.imagekit.io//bd1cebca0f294cfd/Screenshot%202024-12-08%20145502.png?Expires=1733864932&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=AowLrxcm9NUzVex4zDLh1LRBFbqJuqZ2FUPnCsOCOuTFUWLlH~F1lbKxN~OhLpVMl~vRfhPz31McDfEsvCj2vRwE~BnVnLXrVlOuAFDyvyXs2tqyrhZYSOIH5Q3B5F66jAfIYnmz2GABGgClpddG8gQ8dop3g5n8xlrPZYHugikLqQhabx82ZzcKaM4VGkzFb~Dg1Lzh8VIiCOepZZxupj4vJTxR9wCpqNXJx17v9aeYIox~xZfdJDnANuJDeh0ApMfQKRX8PIwGDb8~BvKS7mlZd2zxuZj-e-ZSc2~2IuNIf~JhDUMzD2gRLpPoSdEAzwMpP5w7gIoOdOdWyw3TVA__" alt="Standings">
-        <iframe src="https://sleeper.com/leagues/1134171376178683904/league" style="width: 100%; height: 600px; border: none; margin-top: 1rem;"></iframe>
-    </section>
-
-    <section id="stats" class="content-section">
-        <h2>Player Stats</h2>
-        <p>Track performance and gain insights into your players.</p>
-        <iframe src="https://twitframe.com/show?url=https://twitter.com/i/status/1741319717980127473" style="width: 100%; height: 600px; border: none; margin-top: 1rem;"></iframe>
-    </section>
-
-    <section id="playoff" class="content-section">
-        <h2>Playoff Picture</h2>
-        <p>Stay updated on the teams advancing to the playoffs.</p>
-        <img src="https://media-hosting.imagekit.io//05a3b3d85cef4fba/Screenshot%202024-12-08%20145704.png?Expires=1733862924&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=E~t83AegYKY8vurSGWWicsJZhcN6QecSKkkEWVOVKvYdAzetdfj-LiuFKgNnZCdXEPEbSi0~92YojarAMH5GgheUamrfLyKHfya1nvZIu~CNBcysaFI~mMQ2Lv6w3wnmZypXKM1TPoLU6VnZqwhsB5V3rjuqfO5UKU0yc3jzg~MW~CZ9y3bXR-XWzLpRXr9KkAfVqXG6ZAFNAMPkhtui8l1H3PPJd7v8IA2EE1k9B9TMaYahSQFeEGvYXGBT3ElsatVNq2UU~AUE3EBt68vD~S4ul~z-ghjP1ENG4bzbuJqc2wuLx~yh8fOrzUP3IkjdmgTXlnQZX5fOdYbL9R-iTA__" alt="Playoff Bracket">
-    </section>
-
-    
-        
-        <img src="https://th.bing.com/th/id/OIP.9wdwrLfOk8lfgITSKUmdowHaJQ?rs=1&pid=ImgDetMain" alt="Additional Champion Image" style="width: 100%; height: auto; border-radius: 10px; margin-top: 1rem;">
-    
-        
-        <img src="https://e00-marca.uecdn.es/assets/multimedia/imagenes/2023/12/31/17040250225240.jpg" alt="Champion Highlight" style="width: 100%; height: auto; border-radius: 10px; margin-top: 1rem;">
-        <a href="#" class="button">View More</a>
-    </section>
-</main>
-
-<footer>
-    &copy; 2024 Diab Fantasy Football League. All rights reserved.
-</footer>
-
-<script>
-    function scrollToSection(section) {
-        document.querySelector(section).scrollIntoView({ behavior: 'smooth' });
-    }
-
-    window.addEventListener('scroll', () => {
-        const header = document.querySelector('header');
-        if (window.scrollY > 50) {
-            header.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.5)';
-            header.style.transition = 'box-shadow 0.3s';
-        } else {
-            header.style.boxShadow = 'none';
-        }
-    });
-</script>
-<script>
-    function showFireworks() {
-        const body = document.querySelector('body');
-        const fireworksContainer = document.createElement('div');
-        fireworksContainer.style.position = 'fixed';
-        fireworksContainer.style.top = 0;
-        fireworksContainer.style.left = 0;
-        fireworksContainer.style.width = '100%';
-        fireworksContainer.style.height = '100%';
-        fireworksContainer.style.pointerEvents = 'none';
-        fireworksContainer.style.zIndex = 1000;
-
-        for (let i = 0; i < 20; i++) {
-            const firework = document.createElement('div');
-            firework.style.position = 'absolute';
-            firework.style.background = 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,0,0,0.8) 50%, rgba(0,0,0,0) 100%)';
-            firework.style.borderRadius = '50%';
-            firework.style.width = '20px';
-            firework.style.height = '20px';
-            firework.style.opacity = Math.random();
-            firework.style.left = `${Math.random() * 100}%`;
-            firework.style.top = `${Math.random() * 100}%`;
-            firework.style.animation = 'explode 1s ease-out forwards';
-            fireworksContainer.appendChild(firework);
-
-            setTimeout(() => firework.remove(), 1000);
-        }
-
-        body.appendChild(fireworksContainer);
-
-        setTimeout(() => fireworksContainer.remove(), 2000);
-    }
-
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes explode {
-            0% {
-                transform: scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(5);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-</script>
-</body>
-</html>
+            box-shadow: 0 2px 5
