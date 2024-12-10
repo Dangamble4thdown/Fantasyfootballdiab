@@ -420,6 +420,45 @@ Copy code
 <footer>
     &copy; 2024 Cousins Fantasy Football League. All rights reserved.
 </footer>
+    
+<script>
+    // Load YouTube IFrame API dynamically
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    let player;
+
+    // This function will be triggered when the user clicks the "News" tab
+    function startAudio() {
+        if (!player) {
+            player = new YT.Player('youtube-audio', {
+                height: '0',
+                width: '0',
+                videoId: 'jlqml744E9k', // This is the video ID from the YouTube embed link
+                playerVars: {
+                    autoplay: 1, // Starts playing automatically
+                    controls: 0, // Hides the controls
+                    showinfo: 0, // Hides video info
+                    modestbranding: 1, // Hides YouTube branding
+                    loop: 1, // Loops the video
+                    playlist: 'jlqml744E9k' // Makes sure the video loops
+                },
+                events: {
+                    onReady: (event) => {
+                        event.target.playVideo();
+                    }
+                }
+            });
+        }
+    }
+
+    // YouTube API onYouTubeIframeAPIReady callback function
+    function onYouTubeIframeAPIReady() {
+        // Player will be initialized when the "News" tab is clicked
+    }
+</script>
 
 <script>
     function toggleNews() {
