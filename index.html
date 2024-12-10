@@ -44,4 +44,185 @@
             justify-content: center;
             background-color: rgba(44, 44, 60, 0.9);
             padding: 0.8rem 0;
-            box-shadow: 0 2px 5
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+
+        main {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: 400;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-section {
+            background: rgba(44, 44, 60, 0.9);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .content-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .content-section h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .news-preview h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .news-preview p {
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        iframe {
+            border: 3px solid var(--secondary-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            margin-top: 1rem;
+            background: var(--secondary-color);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #e91e63;
+        }
+    </style>
+</head>
+<body>
+<audio autoplay>
+    <source src="https://drive.google.com/uc?export=download&id=18i5bj6yktEbtpTeCoioEtAYkx1YuiVbo" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/American_football_icon.svg/1200px-American_football_icon.svg.png" alt="Football Icon">
+    <span>Cousins Fantasy Football League</span>
+</header>
+
+<nav>
+    <a href="#home">Home</a>
+    <a href="#news">News</a>
+    <a href="#rules">Rules</a>
+    <a href="#standings">Standings</a>
+    <a href="#stats">Stats</a>
+    <a href="#playoff">Playoff Picture</a>
+    <a href="#champion">Champion</a>
+    <a href="#waiver-wire">Waiver Wire</a>
+</nav>
+
+<main>
+    <section id="home" class="content-section">
+        <h2>Welcome to the Cousins Fantasy Football League</h2>
+        <p>Join the excitement and compete for the ultimate title of Fantasy Champion!</p>
+    </section>
+
+    <section id="news" class="content-section">
+        <h2>Latest News</h2>
+        <div>
+            <h3>Week 14 Power Rankings</h3>
+            <p>Click to see where each team stands, with in-depth analysis for all 12 teams.</p>
+            <a href="#power-rankings" class="button">Read More</a>
+        </div>
+        <div>
+            <h3>Week 14 Waiver Wire Targets</h3>
+            <p>Top 15 players rostered in under 20% of leagues who can make an impact in Week 14.</p>
+            <a href="#waiver-wire" class="button">Read More</a>
+        </div>
+    </section>
+
+    <section id="rules" class="content-section">
+        <h2>League Rules</h2>
+        <iframe src="https://docs.google.com/document/d/e/2PACX-1vTkFlha5UmqF9QZAD-EkG8VktD4DjIQFTro9BYF7T5Vp8PF0GgfWiNlM-BDuOKEDkq91uiQTVt7sSET/pub?embedded=true" style="width: 100%; height: 500px;"></iframe>
+    </section>
+
+    <section id="standings" class="content-section">
+        <h2>Standings</h2>
+        <img src="updated_standings_image.png" alt="Standings">
+    </section>
+
+    <section id="stats" class="content-section">
+        <h2>Player Stats</h2>
+        <img src="updated_player_stats.png" alt="Player Stats">
+    </section>
+
+    <section id="playoff" class="content-section">
+        <h2>Playoff Picture</h2>
+        <img src="updated_playoff_picture.png" alt="Playoff Bracket">
+    </section>
+
+    <section id="champion" class="content-section">
+        <h2>Champion</h2>
+        <img src="champion_image.png" alt="Champion">
+    </section>
+
+    <section id="waiver-wire" class="content-section">
+        <h2>Week 14 Waiver Wire Targets</h2>
+        <ol>
+            <li><strong>Will Levis (QB, TEN):</strong> Improving weekly with 254 yards and 2 TDs in Week 13.</li>
+            <li><strong>Isaiah Davis (RB, NYJ):</strong> Emerging as a strong RB2 with 84 yards and a TD.</li>
+            <li>...and 13 more players.</li>
+        </ol>
+    </section>
+</main>
+
+<footer>
+    &copy; 2024 Cousins Fantasy Football League. All rights reserved.
+</footer>
+
+<script>
+    function scrollToSection(section) {
+        document.querySelector(section).scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
