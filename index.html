@@ -422,14 +422,6 @@ Copy code
 </footer>
     
 <script>
-    // Load YouTube IFrame API dynamically
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    let player;
-
     // This function will be triggered when the user clicks the "News" tab
     function startAudio() {
         if (!player) {
@@ -454,11 +446,19 @@ Copy code
         }
     }
 
-    // YouTube API onYouTubeIframeAPIReady callback function
-    function onYouTubeIframeAPIReady() {
-        // Player will be initialized when the "News" tab is clicked
+    // This function toggles the visibility of the news content
+    function toggleNews() {
+        const fullNews = document.getElementById('full-news');
+        fullNews.style.display = fullNews.style.display === 'none' ? 'block' : 'none';
+        
+        // Start the audio when the news is revealed
+        startAudio();
     }
 </script>
+
+<!-- Add the iframe for the YouTube player in the body -->
+<iframe id="youtube-audio" style="display:none;"></iframe>
+
 
 <script>
     function toggleNews() {
