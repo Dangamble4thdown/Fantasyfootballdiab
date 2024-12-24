@@ -1,496 +1,269 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cousins Fantasy Football League</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Diab Fantasy Football League Official Site</title>
     <style>
-        :root {
-            --primary-color: #8b0000; /* Warm red for Christmas theme */
-            --secondary-color: #228b22; /* Green for Christmas theme */
-            --background-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            --text-color: #fff;
-        }
-
+        /* General Styling */
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: var(--background-gradient);
-            color: var(--text-color);
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #f4f4f4;
         }
-        
+
         header {
-            background-color: var(--primary-color);
+            background: #0d1b2a;
             color: #fff;
-            padding: 1.5rem 0;
             text-align: center;
-            font-size: 2rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+            padding: 40px;
+            font-size: 3rem;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
         nav {
             display: flex;
             justify-content: center;
-            background-color: rgba(44, 44, 60, 0.9);
-            padding: 0.8rem 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background: #1b263b;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         nav a {
             color: #fff;
             text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.7rem 1.2rem;
+            margin: 0 30px;
+            padding: 15px 30px;
             border-radius: 5px;
-            font-weight: 500;
+            font-size: 1.1rem;
+            text-transform: uppercase;
             transition: background 0.3s, color 0.3s;
         }
 
         nav a:hover {
-            background-color: var(--secondary-color);
-            color: #fff;
+            background-color: #e43f5a;
+            color: white;
         }
 
         main {
-            padding: 3rem 2rem;
+            margin: 40px auto;
+            width: 90%;
             max-width: 1200px;
-            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #162447;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            color: #e43f5a;
+            margin-bottom: 25px;
+        }
+
+        .section p {
+            font-size: 1.8rem;
+            line-height: 2.5rem;
+            color: #dcdcdc;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            color: #f1c40f;
+        }
+
+        .section h3 {
+            color: #f4f4f4;
+            font-size: 1.5rem;
+            margin: 25px 0 10px;
         }
 
         footer {
+            background: #1b1b2f;
+            color: #fff;
             text-align: center;
-            padding: 1.5rem;
-            background-color: var(--primary-color);
-            color: #fff;
-            font-weight: 400;
-        }
-
-        .content-section {
-            background: rgba(44, 44, 60, 0.9);
-            padding: 2rem;
-            margin: 1.5rem 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .content-section h2 {
-            color: var(--secondary-color);
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .news-preview {
-            margin-bottom: 1rem;
-        }
-
-        .news-preview h3 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
-        .news-preview p {
+            padding: 30px 0;
+            margin-top: 50px;
             font-size: 1rem;
-            margin: 0.5rem 0;
+            letter-spacing: 1px;
         }
 
-        img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        iframe {
-            border: 3px solid var(--secondary-color);
-            border-radius: 10px;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 0.7rem 1.5rem;
-            margin-top: 1rem;
-            background: var(--secondary-color);
-            color: #fff;
-            font-size: 1rem;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
+        /* Dropdown Alert Styling */
+        .alert-container {
+            background-color: #e43f5a;
+            padding: 20px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
             cursor: pointer;
-            transition: background 0.3s ease;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
-        .button:hover {
-            background: #e91e63;
+        .alert-message {
+            display: none;
+            background-color: #fff;
+            color: #333;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
     </style>
-</head>
-<body>
-<header>
-    <img src="https://www.pewterreport.com/wp-content/uploads/2022/01/Brown-Antonio-Bucs-Jets-Fox-out.jpg" alt="Football Icon">
-    <span>Cousins Fantasy Football League</span>
-</header>
-   <iframe 
-    width="1" 
-    height="1" 
-    src="https://www.youtube.com/embed/37-AlmNdESg?autoplay=1&playsinline=1" 
-    frameborder="0" 
-    allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-    referrerpolicy="strict-origin-when-cross-origin" 
-    allowfullscreen>
-</iframe>
-
-</section>
-</main>
-
-
-<nav>
-    <a href="#home">Home</a>
-    <a href="#news">News</a>
-    <a href="#rules">Rules</a>
-    <a href="#standings">Standings</a>
-    <a href="#stats">Stats</a>
-    <a href="#playoff">Playoff Picture</a>
-    <a href="#champion">Champion</a>
-</nav>
-
-<main>
-    <section id="home" class="content-section">
-        <h2>Welcome to the Cousins Fantasy Football League</h2>
-        <p>Join the excitement and compete for the ultimate title of Fantasy Champion!</p>
-    </section>
-
-    <section id="standings" class="content-section">
-        <h2>Standings</h2>
-        <img src="https://media-hosting.imagekit.io//3cb722f9059c4ed1/Screenshot%202024-12-10%20091602.png?Expires=1734015014&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=hqPLlcoT8uAAh5u1ufVMeOMBHDVt0m5AppkwLHqimbnpdaDWlzCwr9W8zvSCtErO4yLsoDUAzqET4bfI1QBmksSRc5rPsGXNuDSDXCxtzgtNPIzs~zI1iEokr12pg1Uh4Qc3W-De8U5MxbSIoXwdp7BbieDdu8MuvBQn~Imkw5AyaPVTkCRLpxOnrxNaUdLIWkSChoeXx9keO7icZ~UKFor~ruw4x8CCKUw1kVWS~U-KXfxLGq75-lR~-XuOW2CXpNU-GK1QUJTJvj1ngFvt~RRzbDOC-J6q7LcueUqYf77XwxByGNs8C2QwRFSmShMiU9Uh0nEUEPJwlTfUDXIxYQ__" alt="Standings">
-    </section>
-
-    <section id="stats" class="content-section">
-        <h2>Player Stats</h2>
-        <p>Keep track of key player performances in the league. Stay updated as the playoffs approach!</p>
-    </section>
-
-    <section id="playoff" class="content-section">
-        <h2>Playoff Picture</h2>
-        <img src="https://media-hosting.imagekit.io//470dba51f17d44b3/Screenshot%202024-12-10%20091722.png?Expires=1734015014&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Rtzk5t1l~Q8tKXuDEImkdSzGVthURc-vwiZc6KKXMVe55dlQMdRJMaVwrFlEkesY4LnP9Q49qOp5WZnhqBVEuS1bXyD7ozrFlWz51~kiMRCEguQKb9EJ6XKFgJNG~65L7XuurZK3poSfVO1M3LC36ssO0n2hr4qKLhlaTamvPEPcfeoIEZYNUcldi8NS6X9SuUhSds9AwEIcC1O2hxHyyOSRTIyPw2OWkWega8HKEBqQDHpp0~H7EMThYtph9vDMzdzpuph9sAgcC0tH0WPoUTec9LVTXsITFYTdxugVkuQDUTpz0tOBGqDp83LA6BLrp13i60XC-DStdWVnDr7EEQ__" alt="Playoff Picture">
-    </section>
-
-    <section id="champion" class="content-section">
-        <h2>Champion</h2>
-        <img src="https://th.bing.com/th/id/OIP.z4p8VswwfJo0yE_DTK5ItgHaE7?pid=ImgDet&rs=1" alt="Champion Highlight">
-    </section>
-
-    <section id="rules" class="content-section">
-    <h2>League Rules</h2>
-    <p>Stay informed about all the rules and regulations for Cousins Fantasy Football League.</p>
-    <iframe 
-        src="https://docs.google.com/document/d/e/2PACX-1vTkFlha5UmqF9QZAD-EkG8VktD4DjIQFTro9BYF7T5Vp8PF0GgfWiNlM-BDuOKEDkq91uiQTVt7sSET/pub?embedded=true" 
-        style="width: 100%; height: 600px; border: none; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);"
-        sandbox="allow-same-origin allow-scripts">
-    </iframe>
-</section>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autoplay YouTube Video</title>
-</head>
-<body>
-
-    <h1>Autoplay YouTube Video Example</h1>
-    
-    <iframe width="560" height="315" 
-        src="https://www.youtube.com/embed/37-AlmNdESg?autoplay=1&mute=1">
-    </iframe>
-
-</body>
-</html>
-    <!-- News Section -->
-    <section id="news" class="content-section">
-        <h2>Latest News</h2>
-
-        <div class="news-preview" onclick="toggleNews()">
-            <h3>Week 14 Team Grades & Analysis</h3>
-            <p>Check out the team grades and analysis for Week 14 of Cousins Fantasy Football League...</p>
-            <p style="color: #0073e6; cursor: pointer;">Click to read more</p>
-        </div>
-        <div id="full-news" style="display: none; margin-top: 1rem;">
-            <h4>Week 14 Team Grades & Analysis</h4>
-           <p><strong>Matchup 1:</strong> Team Louisdiab vs. Windsor Express</p>
-        <p><strong>Grade: Louisdiab (C), Windsor Express (A+)</strong></p>
-        <p>Analysis: Team Louisdiab struggled despite some solid performances, with QB Herbert underwhelming. Windsor Express dominated with stellar contributions from Josh Allen and consistent scoring across the roster.</p>
-        <p><strong>Best Advice:</strong> Louisdiab should target waiver-wire gems for QB depth. Windsor Express can ride this momentum into playoffs but monitor injury statuses.</p>
-
-        <p><strong>Matchup 2:</strong> Team PierreDiab vs. Team Thesungawd</p>
-        <p><strong>Grade: PierreDiab (A), Thesungawd (C-)</strong></p>
-        <p>Analysis: PierreDiab capitalized on strong outings by Aaron Jones and Jefferson. Thesungawd fell short with weak performances by key players.</p>
-        <p><strong>Best Advice:</strong> PierreDiab should focus on bolstering flex positions. Thesungawd must explore trades for consistent scorers.</p>
-
-        <p><strong>Matchup 3:</strong> Liam Mastronardi vs. #Tanking</p>
-        <p><strong>Grade: Liam Mastronardi (A), #Tanking (D)</strong></p>
-        <p>Analysis: Liam’s roster delivered a well-rounded performance, while #Tanking fell flat with underperforming starters.</p>
-        <p><strong>Best Advice:</strong> Liam should stay the course for playoffs. #Tanking must reconsider roster strategy for future matchups.</p>
-
-        <p><strong>Matchup 4:</strong> JustwinBaby! vs. MCDC</p>
-        <p><strong>Grade: JustwinBaby! (D), MCDC (A-)</strong></p>
-        <p>Analysis: JustwinBaby! struggled across the board. MCDC benefited from consistent scoring by Cousins and a strong defensive outing.</p>
-        <p><strong>Best Advice:</strong> JustwinBaby! should explore waiver wire options. MCDC is well-poised for playoffs but must monitor injury reports.</p>
-
-        <p><strong>Matchup 5:</strong> Android Nightmares vs. The Lions Champ</p>
-        <p><strong>Grade: Android Nightmares (A), The Lions Champ (C-)</strong></p>
-        <p>Analysis: Android Nightmares dominated with Joe Burrow leading the charge. The Lions Champ had sporadic contributions and lacked big plays.</p>
-        <p><strong>Best Advice:</strong> Android Nightmares should focus on bench depth. The Lions Champ should reevaluate starters for higher upside.</p>
-
-        <p><strong>Matchup 6:</strong> Hurts So Good vs. Injured Reserve</p>
-        <p><strong>Grade: Hurts So Good (B-), Injured Reserve (A+)</strong></p>
-        <p>Analysis: Injured Reserve showcased a stellar week with key contributions across the board. Hurts So Good had decent outputs but failed to capitalize on opportunities.</p>
-        <p><strong>Best Advice:</strong> Injured Reserve should manage star players’ health. Hurts So Good needs better matchups for skill positions.</p>
-    </div>
-   
-Here’s how the "Week 14 Team Grades & Analysis" article can be implemented on your website:
-
-Code for News Section
-This code will create a clickable preview for the article in the "News" section, which expands to reveal the full grades and analysis when clicked.
-
-html
-Copy code
-<section id="news" class="content-section">
-    <h2>Latest News</h2>
-    <div class="news-preview" onclick="toggleNews()">
-        <h3>Week 14 Team Grades & Analysis</h3>
-        <p>Check out the team grades and analysis for Week 14 of Cousins Fantasy Football League...</p>
-        <p style="color: #0073e6; cursor: pointer;">Click to read more</p>
-    </div>
-    <div id="full-news" style="display: none; margin-top: 1rem;">
-        <h4>Week 14 Team Grades & Analysis</h4>
-        <p><strong>Matchup 1:</strong> Team Louisdiab vs. Windsor Express</p>
-        <p><strong>Grade: Louisdiab (C), Windsor Express (A+)</strong></p>
-        <p>Analysis: Team Louisdiab struggled despite some solid performances, with QB Herbert underwhelming. Windsor Express dominated with stellar contributions from Josh Allen and consistent scoring across the roster.</p>
-        <p><strong>Best Advice:</strong> Louisdiab should target waiver-wire gems for QB depth. Windsor Express can ride this momentum into playoffs but monitor injury statuses.</p>
-
-        <p><strong>Matchup 2:</strong> Team PierreDiab vs. Team Thesungawd</p>
-        <p><strong>Grade: PierreDiab (A), Thesungawd (C-)</strong></p>
-        <p>Analysis: PierreDiab capitalized on strong outings by Aaron Jones and Jefferson. Thesungawd fell short with weak performances by key players.</p>
-        <p><strong>Best Advice:</strong> PierreDiab should focus on bolstering flex positions. Thesungawd must explore trades for consistent scorers.</p>
-
-        <p><strong>Matchup 3:</strong> Liam Mastronardi vs. #Tanking</p>
-        <p><strong>Grade: Liam Mastronardi (A), #Tanking (D)</strong></p>
-        <p>Analysis: Liam’s roster delivered a well-rounded performance, while #Tanking fell flat with underperforming starters.</p>
-        <p><strong>Best Advice:</strong> Liam should stay the course for playoffs. #Tanking must reconsider roster strategy for future matchups.</p>
-
-        <p><strong>Matchup 4:</strong> JustwinBaby! vs. MCDC</p>
-        <p><strong>Grade: JustwinBaby! (D), MCDC (A-)</strong></p>
-        <p>Analysis: JustwinBaby! struggled across the board. MCDC benefited from consistent scoring by Cousins and a strong defensive outing.</p>
-        <p><strong>Best Advice:</strong> JustwinBaby! should explore waiver wire options. MCDC is well-poised for playoffs but must monitor injury reports.</p>
-
-        <p><strong>Matchup 5:</strong> Android Nightmares vs. The Lions Champ</p>
-        <p><strong>Grade: Android Nightmares (A), The Lions Champ (C-)</strong></p>
-        <p>Analysis: Android Nightmares dominated with Joe Burrow leading the charge. The Lions Champ had sporadic contributions and lacked big plays.</p>
-        <p><strong>Best Advice:</strong> Android Nightmares should focus on bench depth. The Lions Champ should reevaluate starters for higher upside.</p>
-
-        <p><strong>Matchup 6:</strong> Hurts So Good vs. Injured Reserve</p>
-        <p><strong>Grade: Hurts So Good (B-), Injured Reserve (A+)</strong></p>
-        <p>Analysis: Injured Reserve showcased a stellar week with key contributions across the board. Hurts So Good had decent outputs but failed to capitalize on opportunities.</p>
-        <p><strong>Best Advice:</strong> Injured Reserve should manage star players’ health. Hurts So Good needs better matchups for skill positions.</p>
-    </div>
-</section>   
-
-        <div class="news-preview" onclick="toggleRankings()">
-            <h3>Week 14 Power Rankings</h3>
-            <p>See where each team stands after Week 14. Who's dominating, and who's struggling?</p>
-            <p style="color: #0073e6; cursor: pointer;">Click to read more</p>
-        </div>
-        <div id="full-rankings" style="display: none; margin-top: 1rem;">
-            <h4>Week 14 Power Rankings</h4>
-            <ol>
-                 <li><strong>1. Team Louisdiab (11-3):</strong>
-                <p><strong>Analysis:</strong> Despite a tough loss in Week 14, Louisdiab remains the team to beat. With Justin Herbert leading the starting lineup and incredible depth at quarterback with Bo Nix and Jayden Daniels, this team has the firepower to compete at the highest level.</p>
-                <p><strong>Jayden Daniels' Fantasy Stats:</strong> Daniels has been a fantasy monster this season, contributing as both a passer and a rusher. He consistently racks up points with his dual-threat ability, putting up over 30 fantasy points in multiple games. His rushing touchdowns and explosive big-play ability make him a valuable weapon as Louisdiab heads into the playoffs.</p>
-                <p><strong>Needs Work:</strong> Herbert needs to rebound from his Week 14 performance, and the team must find more consistency in the flex positions.</p>
-            </li>
-            <li><strong>2. Injured Reserve (10-4):</strong>
-                <p><strong>Analysis:</strong> Injured Reserve has been a consistent powerhouse with solid QB play and depth in skill positions. Josh Allen continues to lead the way with explosive fantasy performances.</p>
-                <p><strong>Needs Work:</strong> Depth at WR could be an issue if injuries strike.</p>
-            </li>
-            <li><strong>3. Windsor Express (7-7):</strong>
-                <p><strong>Analysis:</strong> Windsor Express delivered a statement win in Week 14. Their balanced roster and a massive week from Allen are propelling them forward.</p>
-                <p><strong>Needs Work:</strong> Running back consistency remains a concern.</p>
-            </li>
-            <li><strong>4. Liam Mastronardi (9-5):</strong>
-                <p><strong>Analysis:</strong> A strong Week 14 outing showcased the depth and firepower of Liam’s roster. Tua Tagovailoa led the charge, supported by a solid WR core.</p>
-                <p><strong>Needs Work:</strong> Tight end production could use improvement.</p>
-            </li>
-            <li><strong>5. PierreDiab (7-7):</strong>
-                <p><strong>Analysis:</strong> PierreDiab bounced back with a strong performance, leaning heavily on stars like Aaron Jones and Justin Jefferson.</p>
-                <p><strong>Needs Work:</strong> Needs to address RB2 consistency.</p>
-            </li>
-            <li><strong>6. Hurts So Good (8-6):</strong>
-                <p><strong>Analysis:</strong> This team’s strength lies in its QB and RB positions, but injuries have hampered their full potential.</p>
-                <p><strong>Needs Work:</strong> WR production has been below par recently.</p>
-            </li>
-            <li><strong>7. MCDC (9-5):</strong>
-                <p><strong>Analysis:</strong> Strong defensive play and QB performance keep this team competitive. Cousins continues to deliver.</p>
-                <p><strong>Needs Work:</strong> Needs to address bench depth heading into playoffs.</p>
-            </li>
-            <li><strong>8. Android Nightmares (6-8):</strong>
-                <p><strong>Analysis:</strong> Joe Burrow and a capable WR core are the team's bright spots. They remain competitive despite a sub-.500 record.</p>
-                <p><strong>Needs Work:</strong> RB production has been hit or miss.</p>
-            </li>
-            <li><strong>9. Thesungawd (6-8):</strong>
-                <p><strong>Analysis:</strong> A tough loss in Week 14 highlighted the team’s reliance on a few key players. RB depth has been inconsistent.</p>
-                <p><strong>Needs Work:</strong> Needs a stronger WR3 or flex option to stay competitive.</p>
-            </li>
-            <li><strong>10. The Lions Champ (3-11):</strong>
-                <p><strong>Analysis:</strong> Despite the record, the team has potential with some bright spots in the WR core. Struggles in QB and RB production remain.</p>
-                <p><strong>Needs Work:</strong> Needs a full roster overhaul in the offseason.</p>
-            </li>
-            <li><strong>11. JustwinBaby! (3-11):</strong>
-                <p><strong>Analysis:</strong> This team has struggled across the board but has shown glimpses of potential in individual players.</p>
-                <p><strong>Needs Work:</strong> Needs consistent scoring from starters and depth.</p>
-            </li>
-            <li><strong>12. #Tanking (5-9):</strong>
-                <p><strong>Analysis:</strong> The name reflects the reality. A lack of effort in waiver pickups and poor performance has led to a disappointing season.</p>
-                <p><strong>Needs Work:</strong> Focus on draft strategy and trades for next season.</p>
-            </li>
-        </div>
-
-        <div class="news-preview" onclick="toggleWaiverWire()">
-            <h3>Week 14 Waiver Wire Targets</h3>
-            <p>Discover 15 players rostered in under 20% of leagues with significant potential in Week 14.</p>
-            <p style="color: #0073e6; cursor: pointer;">Click to read more</p>
-        </div>
-        <div id="full-waiver-wire" style="display: none; margin-top: 1rem;">
-            <h4>Week 14 Waiver Wire Targets</h4>
-            <ol>
-                <li><strong>Will Levis (QB, TEN):</strong>
-                    <p>High-upside streaming option for Week 14.</p>
-                </li>
-                <li><strong>Isaiah Davis (RB, NYJ):</strong>
-                <p><strong>Stats:</strong> 14 carries, 84 yards, 1 TD (Week 13).</p>
-                <p>Davis has stepped into a larger role for the Jets, benefiting from an injury to Breece Hall. He offers a strong rushing presence with occasional targets, making him a viable RB2/flex option. His matchup this week is favorable, boosting his chances for another productive outing.</p>
-            </li>
-            <li><strong>Michael Wilson (WR, ARI):</strong>
-                <p><strong>Stats:</strong> 5 receptions, 78 yards, 1 TD (Week 13).</p>
-                <p>Wilson is developing as a reliable option for Arizona, particularly in contested catch situations. He’s a red-zone threat and offers steady WR3 value in half-PPR leagues. With a soft matchup against a struggling secondary, Wilson is a sneaky good play in Week 14.</p>
-            </li>
-            <li><strong>Jaylen Wright (RB, MIA):</strong>
-                <p><strong>Stats:</strong> 10 carries, 55 yards; 2 receptions, 18 yards (Week 13).</p>
-                <p>Wright is finding his groove in Miami’s high-powered offense. While Mostert still dominates touches, Wright is carving out a role as a versatile change-of-pace back. He’s worth a look for teams in need of RB depth heading into playoffs.</p>
-            </li>
-            <li><strong>Roschon Johnson (RB, CHI):</strong>
-                <p><strong>Stats:</strong> 8 carries, 42 yards; 3 receptions, 21 yards (Week 13).</p>
-                <p>Johnson continues to see steady involvement in Chicago’s backfield, particularly in passing downs. His dual-threat ability makes him a viable flex option in deeper leagues. He’s a smart pickup for fantasy managers needing running back depth.</p>
-            </li>
-            <li><strong>Justice Hill (RB, BAL):</strong>
-                <p><strong>Stats:</strong> 9 carries, 48 yards, 1 TD (Week 13).</p>
-                <p>With Derrick Henry now leading Baltimore’s backfield, Hill has become a valuable change-of-pace option. He’s still seeing red-zone touches and offers standalone value in deeper formats. His Week 14 matchup makes him a great speculative add.</p>
-            </li>
-            <li><strong>Noah Brown (WR, WSH):</strong>
-                <p><strong>Stats:</strong> 3 receptions, 27 yards, 0 TD (Week 13).</p>
-                <p>Brown remains a boom-or-bust flex option, but his ability to stretch the field is undeniable. He’s worth adding if you need a big-play threat, especially with Washington’s softer upcoming schedule.</p>
-            </li>
-            <li><strong>Pat Freiermuth (TE, PIT):</strong>
-                <p><strong>Stats:</strong> 6 receptions, 58 yards, 1 TD (Week 13).</p>
-                <p>Freiermuth has reclaimed his role as a red-zone weapon in Pittsburgh. He’s a solid TE1 option for managers streaming the position or needing a reliable weekly starter.</p>
-            </li>
-            <li><strong>Devin Singletary (RB, HOU):</strong>
-                <p><strong>Stats:</strong> 12 carries, 67 yards; 2 receptions, 10 yards (Week 13).</p>
-                <p>Singletary has emerged as a steady contributor in Houston’s offense. He’s a great RB2 option for managers looking to stabilize their lineup heading into playoffs.</p>
-            </li>
-            <li><strong>Alec Pierce (WR, IND):</strong>
-                <p><strong>Stats:</strong> 5 receptions, 72 yards (Week 13).</p>
-                <p>Pierce’s involvement in the Colts’ offense has increased, and he’s benefiting from solid quarterback play. His upcoming matchup makes him a reliable flex option for Week 14.</p>
-            </li>
-            <li><strong>Khalil Herbert (RB, CHI):</strong>
-                <p><strong>Stats:</strong> 10 carries, 45 yards (Week 13).</p>
-                <p>Herbert is splitting carries but still offers enough volume to be fantasy-relevant. He’s a solid depth option with potential upside depending on game flow.</p>
-            </li>
-            <li><strong>Josh Downs (WR, IND):</strong>
-                <p><strong>Stats:</strong> 7 receptions, 81 yards (Week 13).</p>
-                <p>Downs continues to be a reliable target for Indianapolis. His consistent involvement makes him a valuable WR3/flex option in half-PPR leagues.</p>
-            </li>
-            <li><strong>Sean Tucker (RB, TB):</strong>
-                <p><strong>Stats:</strong> 11 carries, 60 yards (Week 13).</p>
-                <p>Tucker is seeing an increased role as Tampa Bay’s coaching staff looks for fresh offensive options. He’s a deep-league stash with upside in favorable matchups.</p>
-            </li>
-            <li><strong>Juwan Johnson (TE, NO):</strong>
-                <p><strong>Stats:</strong> 5 receptions, 54 yards, 1 TD (Week 13).</p>
-                <p>Johnson is a touchdown-dependent TE who’s seen increased targets in New Orleans’ offense. He’s a solid streaming option for teams needing TE help.</p>
-            </li>
-            <li><strong>Tank Bigsby (RB, JAX):</strong>
-                <p><strong>Stats:</strong> 7 carries, 37 yards; 1 reception, 7 yards (Week 13).</p>
-                <p>Bigsby is a valuable handcuff to Travis Etienne and could step into a larger role if injuries strike. He’s a speculative add for playoff-bound teams.</p>
-            </li>
-            </ol>
-        </div>
-    </section>
-</main>
-
-<footer>
-    &copy; 2024 Cousins Fantasy Football League. All rights reserved.
-</footer>
-    
-<script>
-    // This function will be triggered when the user clicks the "News" tab
-    function startAudio() {
-        if (!player) {
-            player = new YT.Player('youtube-audio', {
-                height: '0',
-                width: '0',
-                videoId: 'jlqml744E9k', // This is the video ID from the YouTube embed link
-                playerVars: {
-                    autoplay: 1, // Starts playing automatically
-                    controls: 0, // Hides the controls
-                    showinfo: 0, // Hides video info
-                    modestbranding: 1, // Hides YouTube branding
-                    loop: 1, // Loops the video
-                    playlist: 'jlqml744E9k' // Makes sure the video loops
-                },
-                events: {
-                    onReady: (event) => {
-                        event.target.playVideo();
-                    }
-                }
-            });
+    <script>
+        function toggleAlert() {
+            var message = document.getElementById("alertMessage");
+            if (message.style.display === "block") {
+                message.style.display = "none";
+            } else {
+                message.style.display = "block";
+            }
         }
-    }
+    </script>
+</head>
+<body>
+    <header>
+        Diab Fantasy Football League
+    </header>
 
-    // This function toggles the visibility of the news content
-    function toggleNews() {
-        const fullNews = document.getElementById('full-news');
-        fullNews.style.display = fullNews.style.display === 'none' ? 'block' : 'none';
-        
-        // Start the audio when the news is revealed
-        startAudio();
-    }
-</script>
+    <!-- Navigation Menu -->
+    <nav>
+        <a href="#standings">Standings</a>
+        <a href="#playoffs">Playoffs</a>
+        <a href="#rules">League Rules</a>
+        <a href="#news">News</a>
+    </nav>
 
-<!-- Add the iframe for the YouTube player in the body -->
-<iframe id="youtube-audio" style="display:none;"></iframe>
+    <!-- YouTube Embed for Autoplay -->
+    <iframe width="0" height="0" src="https://www.youtube.com/embed/jlqml744E9k?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+
+    <main>
+        <!-- Alert Dropdown -->
+        <div class="alert-container" onclick="toggleAlert()">
+            IMPORTANT: Waivers process at 3 AM on Wednesday, December 24th, 2024. 
+            Click for more details.
+        </div>
+        <div id="alertMessage" class="alert-message">
+            <p>🔔 Waiver claims will not be processed after the 3 AM deadline on Wednesday, December 24th, 2024. 
+            Make sure to submit your claims by Tuesday night to ensure they are processed. Late submissions 
+            will roll over to the following week. Please double-check your waiver priorities to maximize your 
+            chances of acquiring key free agents.</p>
+        </div>
+
+        <!-- Standings Section -->
+        <section id="standings" class="section">
+            <h2>League Standings</h2>
+            <img src="https://media-hosting.imagekit.io//3cb722f9059c4ed1/Screenshot%202024-12-10%20091602.png" 
+                 alt="League Standings" 
+                 style="width: 100%; border-radius: 10px;">
+        </section>
+
+        <!-- Playoffs Section -->
+        <section id="playoffs" class="section">
+            <h2>Playoff Matchups</h2>
+            <p>🏆 <span class="highlight">CHAMPIONSHIP GAME:</span> Liam vs Louis</p>
+            <p>🥉 <span class="highlight">3rd Place GAME:</span> Scott vs Pete</p>
+            <p>🎖️ <span class="highlight">7th Place GAME:</span> Ben vs Sam</p>
+            <p>🏅 <span class="highlight">9th Place GAME:</span> Krysztof vs Matt</p>
+        </section>
+
+        <section id="news" class="section">
+    <h2>Latest News</h2>
+
+    <!-- AI's Picks Section -->
+    <h3>🏈 AI's Picks: Who Will Win?</h3>
+    <p>After analyzing the rosters, matchups, and player performances, **Louis' team** is predicted to win this fantasy showdown in half-PPR scoring. Louis' team features elite talent in Saquon Barkley, who thrives in both the rushing and passing game. Barkley’s ability to accumulate yards and receptions provides a stable floor with significant upside. Additionally, Jayden Daniels’ dual-threat nature as a rushing quarterback adds consistent points that can swing the matchup in Louis’ favor.</p>
+
+    <p>Louis' wide receiver corps, led by Nico Collins and Jauan Jennings, is well-rounded and capable of producing double-digit points, even in half-PPR formats. Aaron Jones, though slightly volatile, remains a dependable RB2 option with goal-line upside. Pat Freiermuth offers a red-zone target at tight end, boosting his potential to score touchdowns. This combination of star power and depth allows Louis' team to edge out Liam’s lineup, which relies heavily on Ja’Marr Chase and Tua Tagovailoa to carry the scoring load.</p>
+
+    <p>While Liam’s roster possesses explosive players, the variance at RB2 and potential injury risks to Mark Andrews create uncertainty. In a close contest, Louis' balanced attack and reliable scoring options across multiple positions make him the favorite to win.</p>
+
+    <p>**Final Score Prediction (Half-PPR):**  
+    - **Louis' Team:** 138.9  
+    - **Liam's Team:** 131.4</p>
+
+    <p>Louis' edge in consistent performers like Barkley and Daniels should help him secure the victory by a narrow margin.</p>
+
+    <hr>
+
+    <!-- Week 17 Waiver Wire Article -->
+    <h3>🔥 Week 17 Waiver Wire Pickups</h3>
+    <p>Looking to strengthen your roster for the playoffs? Here are the top 10 waiver wire targets based on recent performances and projected opportunities. Suggested FAAB (Free Agent Acquisition Budget) amounts are included to help guide your bids.</p>
+
+    <ol>
+        <li>
+            <strong>A. Rodgers (NYJ - QB)</strong>  
+            <br> <em>FAAB: 20-25%</em>  
+            <p>Aaron Rodgers is nearing a return and could provide immediate value for fantasy managers looking for a QB. His experience and poise make him a top-tier option for the stretch run. The Jets will likely unleash Rodgers as they push for the playoffs.</p>
+        </li>
+
+        <li>
+            <strong>C. Rush (DAL - QB)</strong>  
+            <br> <em>FAAB: 10-15%</em>  
+            <p>Rush has proven capable when filling in for Dak Prescott. As the Cowboys gear up for playoff positioning, Rush could see more action. He’s a solid insurance policy at QB.</p>
+        </li>
+
+        <li>
+            <strong>D. Thompson-Robinson (CLE - QB)</strong>  
+            <br> <em>FAAB: 10%</em>  
+            <p>DTR offers dual-threat potential and has flashed in His last game. His rushing ability boosts his fantasy floor, making him valuable in deeper leagues or superflex formats.</p>
+        </li>
+
+        <li>
+            <strong>W. Robinson (NYG - WR)</strong>  
+            <br> <em>FAAB: 12-18%</em>  
+            <p>Robinson is becoming a go-to target for the Giants. His target share makes him valuable in PPR leagues, and his role should grow as the Giants lean on their young core. Owners should be careful though, as he is not quite a YAC player.</p>
+        </li>
+
+        <li>
+            <strong>B. Cooks (DAL - WR)</strong>  
+            <br> <em>FAAB: 10-15%</em>  
+            <p>Cooks has big-play potential and is a vital part of the Cowboys’ passing attack. Especially with Ceedee Lamb's banged up shoulder, Cooks should be targeted more. His ability to produce yards after the catch gives him flex appeal in favorable matchups.</p>
+        </li>
+
+        <li>
+            <strong>D. Moore (CAR - WR)</strong>  
+            <br> <em>FAAB: 8-10%</em>  
+            <p>Moore’s involvement is increasing, and the Panthers' passing game is shifting towards evaluation mode. Moore could benefit from additional targets, making him a sleeper add.</p>
+        </li>
+
+        <li>
+            <strong>T. Patrick (DET - WR)</strong>  
+            <br> <em>FAAB: 8%</em>  
+            <p>Patrick is working his way as a red-zone threat for the Lions and Patrick could emerge as a late-season difference-maker.</p>
+        </li>
+
+        <li>
+            <strong>G. Calcaterra (PHI - TE)</strong>  
+            <br> <em>FAAB: 5-8%</em>  
+            <p>With Goedert banged up, Calcaterra will and has seen more opportunities. The Eagles offense features tight ends prominently, giving Calcaterra upside as a plug-and-play TE for fantasy managers. </p>
+        </li>
+    </ol>
+
+    <p>🏆 <em>Prioritize quarterbacks if you need stability or upside at the position. For flex spots, focus on receivers like Wan’Dale Robinson and Brandin Cooks for immediate impact.</em></p>
+</section>
 
 
-<script>
-    function toggleNews() {
-        const fullNews = document.getElementById('full-news');
-        fullNews.style.display = fullNews.style.display === 'none' ? 'block' : 'none';
-    }
+        <!-- Rules Section -->
+        <section id="rules" class="section">
+            <h2>League Rules</h2>
+            <iframe src="https://docs.google.com/document/d/e/2PACX-1vTkFlha5UmqF9QZAD-EkG8VktD4DjIQFTro9BYF7T5Vp8PF0GgfWiNlM-BDuOKEDkq91uiQTVt7sSET/pub?embedded=true">
+            </iframe>
+        </section>
+    </main>
 
-    function toggleRankings() {
-        const fullRankings = document.getElementById('full-rankings');
-        fullRankings.style.display = fullRankings.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function toggleWaiverWire() {
-        const fullWaiverWire = document.getElementById('full-waiver-wire');
-        fullWaiverWire.style.display = fullWaiverWire.style.display === 'none' ? 'block' : 'none';
-    }
-</script>
+    <footer>
+        &copy; 2024 Diab Fantasy Football League. All rights reserved.
+    </footer>
 </body>
 </html>
