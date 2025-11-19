@@ -1,1058 +1,136 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Trophy, 
-  Shield, 
-  Users, 
-  Calendar, 
-  MessageSquare, 
-  Search, 
-  Bell, 
-  TrendingUp, 
-  TrendingDown, 
-  UserPlus, 
-  Settings, 
-  Menu, 
-  X, 
-  ArrowRight, 
-  Activity,
-  Newspaper,
-  PenTool,
-  User,
-  Eye,
-  ArrowLeftRight,
-  Send,
-  RefreshCw
-} from 'lucide-react';
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  signInAnonymously, 
-  signInWithCustomToken 
-} from 'firebase/auth';
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  onSnapshot, 
-  query, 
-  serverTimestamp,
-  doc,
-  updateDoc
-} from 'firebase/firestore';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Solar Sheet</title>
 
-// --- FIREBASE CONFIGURATION ---
-const firebaseConfig = JSON.parse(__firebase_config);
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f4f4;
+    color: #222;
+  }
 
-// --- MOCK DATA & ROSTERS ---
-const LEAGUE_NAME = "Windsor Dynasty League";
-const CURRENT_WEEK = 12;
+  header {
+    background: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+  }
 
-// Helper to generate consistent roster structure
-const createPlayer = (id, name, pos, team, score, status = 'active') => ({ id, name, position: pos, team, score, status });
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+  }
 
-const ROSTER_SCOTT = [
-  createPlayer('s1', "J. Herbert", "QB", "LAC", 3.34),
-  createPlayer('s2', "D. Henry", "RB", "BAL", 19.20),
-  createPlayer('s3', "C. Rodriguez", "RB", "WAS", 9.00),
-  createPlayer('s4', "P. Washington", "WR", "JAX", 3.00),
-  createPlayer('s5', "R. Rice", "WR", "KC", 6.80),
-  createPlayer('s6', "T. Kelce", "TE", "KC", 19.60),
-  createPlayer('s7', "D. London", "FLEX", "ATL", 15.40),
-  createPlayer('s8', "Q. Johnston", "FLEX", "LAC", 0.00)
-];
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
 
-const ROSTER_PETE = [
-  createPlayer('p1', "L. Jackson", "QB", "BAL", 4.72),
-  createPlayer('p2', "A. Jeanty", "RB", "LV", 6.40),
-  createPlayer('p3', "E. Demercado", "RB", "ARI", 3.00),
-  createPlayer('p4', "Z. Flowers", "WR", "BAL", 9.80),
-  createPlayer('p5', "A. Brown", "WR", "PHI", 8.40),
-  createPlayer('p6', "T. Johnson", "TE", "NYG", 5.10),
-  createPlayer('p7', "K. Hunt", "FLEX", "KC", 12.70),
-  createPlayer('p8', "J. Williams", "FLEX", "DET", 17.70)
-];
+  .section-title {
+    margin-top: 30px;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    padding-bottom: 6px;
+  }
 
-const ROSTER_ALAN = [
-  createPlayer('a1', "J. Allen", "QB", "BUF", 42.68),
-  createPlayer('a2', "Q. Judkins", "RB", "CLE", 5.90),
-  createPlayer('a3', "R. White", "RB", "TB", 7.20),
-  createPlayer('a4', "J. Chase", "WR", "CIN", 4.50),
-  createPlayer('a5', "E. Egbuka", "WR", "TB", 6.50),
-  createPlayer('a6', "T. McBride", "TE", "ARI", 22.50),
-  createPlayer('a7', "S. Diggs", "FLEX", "NE", 15.00),
-  createPlayer('a8', "O. Gadsden", "FLEX", "LAC", 5.10)
-];
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+    font-size: 16px;
+  }
 
-const ROSTER_MATTHEW = [
-  createPlayer('m1', "M. Mariota", "QB", "WAS", 15.42),
-  createPlayer('m2', "T. Etienne", "RB", "JAX", 19.30),
-  createPlayer('m3', "S. Barkley", "RB", "PHI", 9.50),
-  createPlayer('m4', "K. Shakir", "WR", "BUF", 0.20),
-  createPlayer('m5', "D. Moore", "WR", "CHI", 2.60),
-  createPlayer('m6', "H. Henry", "TE", "NE", 6.50),
-  createPlayer('m7', "J. Williams", "FLEX", "DAL", 9.80),
-  createPlayer('m8', "K. Walker", "FLEX", "SEA", 18.60)
-];
+  button {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 
-const ROSTER_LIAM = [
-  createPlayer('l1', "J. Love", "QB", "GB", 17.66),
-  createPlayer('l2', "J. Warren", "RB", "PIT", 7.70),
-  createPlayer('l3', "A. Jones", "RB", "MIN", 9.60),
-  createPlayer('l4', "P. Nacua", "WR", "LAR", 10.80),
-  createPlayer('l5', "D. Adams", "WR", "LAR", 6.60),
-  createPlayer('l6', "B. Bowers", "TE", "LV", 10.70),
-  createPlayer('l7', "T. Higgins", "FLEX", "CIN", 13.80),
-  createPlayer('l8', "G. Kittle", "FLEX", "SF", 21.70)
-];
+  .button-blue {
+    background: #007bff;
+    color: #fff;
+  }
 
-const ROSTER_LOUIS = [
-  createPlayer('lo1', "A. Rodgers", "QB", "PIT", 9.44),
-  createPlayer('lo2', "J. Cook", "RB", "BUF", 18.90),
-  createPlayer('lo3', "R. Dowdle", "RB", "CAR", 12.50),
-  createPlayer('lo4', "D. Metcalf", "WR", "PIT", 7.40),
-  createPlayer('lo5', "N. Collins", "WR", "HOU", 19.70),
-  createPlayer('lo6', "C. Loveland", "TE", "CHI", 5.50),
-  createPlayer('lo7', "C. Brown", "FLEX", "CIN", 15.70),
-  createPlayer('lo8', "J. Addison", "FLEX", "MIN", 9.00)
-];
+  .button-black {
+    background: #000;
+    color: #fff;
+  }
 
-const ROSTER_PAUL = [
-  createPlayer('pa1', "D. Maye", "QB", "NE", 15.44),
-  createPlayer('pa2', "W. Marks", "RB", "HOU", 5.60),
-  createPlayer('pa3', "C. McCaffrey", "RB", "SF", 32.60),
-  createPlayer('pa4', "L. McConkey", "WR", "LAC", 2.80),
-  createPlayer('pa5', "R. Odunze", "WR", "CHI", 5.10),
-  createPlayer('pa6', "H. Fannin", "TE", "CLE", 3.60),
-  createPlayer('pa7', "T. Henderson", "FLEX", "NE", 29.80),
-  createPlayer('pa8', "K. Vidal", "FLEX", "LAC", 2.20)
-];
+  .result-box {
+    background: #eee;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
 
-const ROSTER_PIERRE = [
-  createPlayer('pi1', "D. Prescott", "QB", "DAL", 24.32),
-  createPlayer('pi2', "D. Singletary", "RB", "NYG", 17.20),
-  createPlayer('pi3', "J. Jacobs", "RB", "GB", 4.00),
-  createPlayer('pi4', "J. Waddle", "WR", "MIA", 6.70),
-  createPlayer('pi5', "M. Hollins", "WR", "NE", 8.40),
-  createPlayer('pi6', "J. Ferguson", "TE", "DAL", 9.60),
-  createPlayer('pi7', "A. St. Brown", "FLEX", "DET", 5.20),
-  createPlayer('pi8', "J. Smith-Njigba", "FLEX", "SEA", 16.10)
-];
+</style>
+</head>
+<body>
 
-const ROSTER_NICK = [
-  createPlayer('n1', "J. Brissett", "QB", "ARI", 21.88),
-  createPlayer('n2', "K. Williams", "RB", "LAR", 16.10),
-  createPlayer('n3', "D. Montgomery", "RB", "DET", 4.20),
-  createPlayer('n4', "J. Jefferson", "WR", "MIN", 8.60),
-  createPlayer('n5', "K. Allen", "WR", "LAC", 7.30),
-  createPlayer('n6', "D. Goedert", "TE", "PHI", 3.40),
-  createPlayer('n7', "G. Pickens", "FLEX", "DAL", 24.90),
-  createPlayer('n8', "M. Wilson", "FLEX", "ARI", 26.00)
-];
+<header>
+  <div class="title">Solar app</div>
+  <div>User: Not Logged In</div>
+</header>
 
-const ROSTER_KRYSTOF = [
-  createPlayer('k1', "P. Mahomes", "QB", "KC", 13.34),
-  createPlayer('k2', "B. Robinson", "RB", "ATL", 28.30),
-  createPlayer('k3', "D. Swift", "RB", "CHI", 9.00),
-  createPlayer('k4', "D. Smith", "WR", "PHI", 1.30),
-  createPlayer('k5', "T. Tucker", "WR", "LV", 12.70),
-  createPlayer('k6', "D. Knox", "TE", "BUF", 2.80),
-  createPlayer('k7', "T. Johnson", "FLEX", "TB", 1.10),
-  createPlayer('k8', "T. Tracy", "FLEX", "NYG", 15.90)
-];
+<div class="container">
 
-const ROSTER_BEN = [
-  createPlayer('b1', "S. Darnold", "QB", "SEA", 4.26),
-  createPlayer('b2', "K. Monangai", "RB", "CHI", 10.20),
-  createPlayer('b3', "D. Achane", "RB", "MIA", 19.00),
-  createPlayer('b4', "T. McMillan", "WR", "CAR", 29.00),
-  createPlayer('b5', "J. Jennings", "WR", "SF", 7.40),
-  createPlayer('b6', "M. Andrews", "TE", "BAL", 14.20),
-  createPlayer('b7', "D. Samuel", "FLEX", "WAS", 17.20),
-  createPlayer('b8', "J. Gibbs", "FLEX", "DET", 17.10)
-];
+  <h2 class="section-title">Customer Information</h2>
 
-const ROSTER_ALEX = [
-  createPlayer('as1', "J. Hurts", "QB", "PHI", 14.50),
-  createPlayer('as2', "K. Gainwell", "RB", "PHI", 26.00),
-  createPlayer('as3', "B. Hall", "RB", "NYJ", 7.40),
-  createPlayer('as4', "C. Lamb", "WR", "DAL", 15.10),
-  createPlayer('as5', "T. Franklin", "WR", "DEN", 10.40),
-  createPlayer('as6', "Z. Ertz", "TE", "WAS", 6.20),
-  createPlayer('as7', "J. Jeudy", "FLEX", "CLE", 3.60),
-  createPlayer('as8', "M. Washington", "FLEX", "MIA", 5.70),
-  createPlayer('as9', "J. McCarthy", "QB", "MIN", 6.00, 'bench'),
-  createPlayer('as10', "E. Ayomanor", "WR", "TEN", 2.10, 'bench'),
-];
+  <label>Name</label>
+  <input type="text" placeholder="Customer name" />
 
-const MOCK_TEAMS = [
-  { id: 1, name: "Que Rico!!", owner: "Louis (louisdiab)", wins: 9, losses: 2, pts: 1028.66, rank: 1, avatar: "bg-indigo-500", roster: ROSTER_LOUIS },
-  { id: 2, name: "Situ's Window Cleaners", owner: "Pierre (PierreDiab)", wins: 8, losses: 3, pts: 1229.30, rank: 2, avatar: "bg-orange-500", roster: ROSTER_PIERRE },
-  { id: 3, name: "NorkCityBrawlers", owner: "Alan (almurrieta22)", wins: 8, losses: 3, pts: 1163.50, rank: 3, avatar: "bg-green-600", roster: ROSTER_ALAN },
-  { id: 4, name: "Hurts So Good", owner: "Alex (AlexSeguin)", wins: 7, losses: 4, pts: 1133.48, rank: 4, avatar: "bg-emerald-500", roster: ROSTER_ALEX },
-  { id: 5, name: "JustwinBaby!", owner: "Paul (paulholub)", wins: 7, losses: 4, pts: 1117.72, rank: 5, avatar: "bg-green-400", roster: ROSTER_PAUL },
-  { id: 6, name: "The Charbonnet Sauvignons", owner: "Nick (NickSeguin)", wins: 7, losses: 4, pts: 1065.88, rank: 6, avatar: "bg-red-400", roster: ROSTER_NICK },
-  { id: 7, name: "Windsor Express", owner: "Krystof (Grabka)", wins: 6, losses: 5, pts: 1093.36, rank: 7, avatar: "bg-purple-500", roster: ROSTER_KRYSTOF },
-  { id: 8, name: "Minimum Magnets", owner: "Ben (thesungawd)", wins: 5, losses: 6, pts: 964.22, rank: 8, avatar: "bg-orange-400", roster: ROSTER_BEN },
-  { id: 9, name: "#Tanking", owner: "Matthew (bdiab)", wins: 3, losses: 8, pts: 1103.04, rank: 9, avatar: "bg-blue-400", roster: ROSTER_MATTHEW },
-  { id: 10, name: "Liam Mastronardi", owner: "Liam (LeeMastro)", wins: 2, losses: 9, pts: 992.72, rank: 10, avatar: "bg-yellow-500", roster: ROSTER_LIAM },
-  { id: 11, name: "Injured Reserve", owner: "Scott (ScottyK37)", wins: 2, losses: 9, pts: 963.76, rank: 11, avatar: "bg-teal-400", roster: ROSTER_SCOTT },
-  { id: 12, name: "MCDC", owner: "Pete (PeteDiab)", wins: 2, losses: 9, pts: 869.56, rank: 12, avatar: "bg-blue-800", roster: ROSTER_PETE },
-];
+  <label>Email</label>
+  <input type="text" placeholder="Customer email" />
 
-const MATCHUPS = [
-  { id: 1, team1Id: 1, team2Id: 2, team1Score: 98.14, team2Score: 91.52 },
-  { id: 2, team1Id: 10, team2Id: 6, team1Score: 98.56, team2Score: 112.38 },
-  { id: 3, team1Id: 4, team2Id: 11, team1Score: 88.90, team2Score: 76.34 },
-  { id: 4, team1Id: 9, team2Id: 12, team1Score: 118.36, team2Score: 67.82 },
-  { id: 5, team1Id: 3, team2Id: 8, team1Score: 109.38, team2Score: 81.92 },
-  { id: 6, team1Id: 5, team2Id: 7, team1Score: 97.14, team2Score: 84.44 },
-];
+  <label>Phone</label>
+  <input type="text" placeholder="Phone number" />
 
-const WEEK_11_RECAP_ARTICLE = {
-  id: "week-11-recap",
-  title: "Week 11 Recap: The Good, The Bad, & The Ugly",
-  content: `Another week of Windsor Dynasty action is in the books, and boy was it spicy. Here's the rundown:
+  <h2 class="section-title">Electricity Usage</h2>
 
-🔥 THE GOOD: NorkCityBrawlers (Alan)
-Josh Allen put the entire franchise on his back with 42.68 points! I don't know what kind of pre-game speech Alan gave, but it worked. The rest of the team basically tailgated while Allen destroyed the stat sheet. 109.38 total points with nearly half coming from one guy? That's efficiency.
+  <label>Annual kWh Usage</label>
+  <input type="number" placeholder="Enter yearly kWh" />
 
-❄️ THE BAD: Injured Reserve (Scott)
-Scott, buddy. Justin Herbert with 3.34 points? I've seen kickers with flu games put up better numbers. Losing 76-88 to Alex is tough, but when your QB1 is getting outscored by your bench warmers, it's time to hit the panic button. "Injured Reserve" feels less like a team name and more like a lifestyle choice at this point.
+  <h2 class="section-title">Solar System</h2>
 
-🤡 THE UGLY: MCDC (Pete)
-Pete... we need to talk. 67.82 points? Lamar Jackson with 4.72? Did Lamar decide to play left-handed? Did he leave at halftime? MCDC got absolutely dismantled by #Tanking (Matthew), who dropped 118.36. When you get blown out by 50 points by a team literally named "Tanking", you have to look in the mirror and ask yourself some hard questions.
+  <label>Solar Size (kW)</label>
+  <input type="number" placeholder="System size" />
 
-🏆 HONORABLE MENTION: #Tanking (Matthew)
-Despite the name, Matthew isn't tanking very well. M. Mariota and K. Walker put on a clinic. Maybe change the name to #AccidentallyCompetent?`,
-  tag: "Recap",
-  author: "The Commish",
-  timestamp: { seconds: Date.now() / 1000 }
-};
+  <label>Price ($)</label>
+  <input type="number" placeholder="System cost" />
 
-// --- COMPONENTS ---
+  <button class="button-blue">Calculate Savings</button>
 
-const StatCard = ({ title, value, trend, subtext, color }) => (
-  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{value}</h3>
-      </div>
-      <div className={`p-2 rounded-lg ${color} bg-opacity-10`}>
-        {trend === 'up' ? <TrendingUp size={20} className={color.replace('bg-', 'text-')} /> : 
-         trend === 'down' ? <TrendingDown size={20} className={color.replace('bg-', 'text-')} /> :
-         <Activity size={20} className={color.replace('bg-', 'text-')} />}
-      </div>
-    </div>
-    {subtext && <p className="text-xs text-slate-400 mt-2">{subtext}</p>}
+  <div class="result-box">
+    <p><strong>Savings Breakdown:</strong></p>
+    <p>Estimated annual savings: $0</p>
+    <p>Payback period: 0 years</p>
   </div>
-);
 
-const PlayerRow = ({ player, onAction, isRoster, showTrade = false, onTradeToggle }) => {
-  const isBench = player.status === 'bench';
-  
-  return (
-    <div className={`flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700 ${isBench ? 'bg-slate-50 dark:bg-slate-800/50' : 'bg-white dark:bg-slate-800'}`}>
-      <div className="flex items-center space-x-4 flex-1">
-        <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs 
-          ${player.position === 'QB' ? 'bg-red-100 text-red-600' : 
-            player.position === 'RB' ? 'bg-green-100 text-green-600' : 
-            player.position === 'WR' ? 'bg-blue-100 text-blue-600' : 
-            player.position.includes('TE') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'}`}>
-          {player.position.substring(0,2)}
-        </div>
-        <div>
-          <p className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            {player.name}
-            {player.isOnBlock && <span className="text-[10px] bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded font-bold uppercase">On Block</span>}
-          </p>
-          <p className="text-xs text-slate-500">{player.team} • {player.score ? `Score: ${player.score}` : `vs ${player.opponent}`}</p>
-        </div>
-      </div>
-      
-      <div className="flex items-center space-x-6 md:space-x-12">
-        {player.score !== undefined && (
-            <div className="text-center hidden md:block">
-            <p className="text-xs text-slate-400">Points</p>
-            <p className={`font-medium ${player.score > 15 ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{player.score}</p>
-            </div>
-        )}
-        
-        {isRoster && onAction && (
-          <button 
-            onClick={() => onAction(player.id)}
-            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors
-              ${player.status === 'active' 
-                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' 
-                : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}`}
-          >
-            {player.status === 'active' ? 'STARTING' : 'BENCH'}
-          </button>
-        )}
+  <h2 class="section-title">Design Preview</h2>
 
-        {showTrade && (
-           <button 
-             onClick={() => onTradeToggle(player.id)}
-             className={`p-2 rounded-full transition-colors ${player.isOnBlock ? 'bg-pink-100 text-pink-600' : 'hover:bg-slate-100 text-slate-400'}`}
-             title="Toggle Trade Block"
-           >
-             <ArrowLeftRight size={16} />
-           </button>
-        )}
-      </div>
-    </div>
-  );
-};
+  <div class="result-box">
+    <p>No design selected.</p>
+  </div>
 
-const MatchupRow = ({ matchup, teams, onClick }) => {
-  const team1 = teams.find(t => t.id === matchup.team1Id);
-  const team2 = teams.find(t => t.id === matchup.team2Id);
+  <button class="button-black">Download Report (PDF)</button>
 
-  if (!team1 || !team2) return null;
+</div>
 
-  return (
-    <div 
-      onClick={() => onClick(matchup)}
-      className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:shadow-md transition-all"
-    >
-      <div className="flex-1 w-full flex justify-between items-center sm:justify-start sm:gap-4">
-        <div className="flex items-center gap-3 flex-1">
-           <div className={`w-8 h-8 rounded-full ${team1.avatar} flex-shrink-0 hidden sm:block`}></div>
-           <div className="text-right sm:text-left flex-1">
-             <p className={`font-bold truncate ${matchup.team1Score > matchup.team2Score ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{team1.name}</p>
-             <p className="text-2xl font-bold">{matchup.team1Score}</p>
-           </div>
-        </div>
-      </div>
-      
-      <div className="px-4 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs font-bold text-slate-500">
-        VS
-      </div>
-
-      <div className="flex-1 w-full flex justify-between items-center sm:justify-end sm:gap-4">
-         <div className="flex items-center gap-3 flex-1 flex-row-reverse sm:flex-row">
-           <div className="text-left sm:text-right flex-1">
-             <p className={`font-bold truncate ${matchup.team2Score > matchup.team1Score ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{team2.name}</p>
-             <p className="text-2xl font-bold">{matchup.team2Score}</p>
-           </div>
-           <div className={`w-8 h-8 rounded-full ${team2.avatar} flex-shrink-0 hidden sm:block`}></div>
-         </div>
-      </div>
-    </div>
-  );
-};
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [roster, setRoster] = useState(ROSTER_ALEX);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [teams, setTeams] = useState(MOCK_TEAMS);
-  
-  // Auth & Data State
-  const [user, setUser] = useState(null);
-  const [writerName, setWriterName] = useState('');
-  const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
-  const [articles, setArticles] = useState([WEEK_11_RECAP_ARTICLE]);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const messagesEndRef = useRef(null);
-  
-  // UI State
-  const [isWriting, setIsWriting] = useState(false);
-  const [newArticle, setNewArticle] = useState({ title: '', content: '', tag: 'News' });
-  const [isPosting, setIsPosting] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const [selectedMatchup, setSelectedMatchup] = useState(null);
-
-  // 1. Auth Setup
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (error) {
-        console.error("Authentication failed:", error);
-      }
-    };
-    initAuth();
-    
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      const savedName = localStorage.getItem('fantasy_writer_name');
-      if (savedName) setWriterName(savedName);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // 2. Data Fetching (Newsletter & Chat)
-  useEffect(() => {
-    if (!user) return;
-    
-    // Newsletter
-    const qNews = query(collection(db, 'artifacts', appId, 'public', 'data', 'newsletter'));
-    const unsubNews = onSnapshot(qNews, (snapshot) => {
-      const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      fetched.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-      setArticles([WEEK_11_RECAP_ARTICLE, ...fetched]);
-    });
-
-    // Chat
-    const qChat = query(collection(db, 'artifacts', appId, 'public', 'data', 'chat'));
-    const unsubChat = onSnapshot(qChat, (snapshot) => {
-      const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      fetched.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
-      setMessages(fetched);
-    });
-
-    return () => { unsubNews(); unsubChat(); };
-  }, [user]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, activeTab]);
-
-  const handleSetWriterName = (e) => {
-    e.preventDefault();
-    if (writerName.trim()) {
-      localStorage.setItem('fantasy_writer_name', writerName);
-      setIsWriterModalOpen(false);
-    }
-  };
-
-  const handlePostArticle = async (e) => {
-    e.preventDefault();
-    if (!user || !writerName || !newArticle.title || !newArticle.content) return;
-    setIsPosting(true);
-    try {
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'newsletter'), {
-        title: newArticle.title,
-        content: newArticle.content,
-        tag: newArticle.tag,
-        author: writerName,
-        authorId: user.uid,
-        timestamp: serverTimestamp()
-      });
-      setNewArticle({ title: '', content: '', tag: 'News' });
-      setIsWriting(false);
-    } catch (error) { console.error(error); } 
-    finally { setIsPosting(false); }
-  };
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!user || !writerName || !newMessage.trim()) return;
-    try {
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'chat'), {
-        text: newMessage,
-        user: writerName,
-        userId: user.uid,
-        avatar: 'bg-indigo-500', // Default avatar color
-        timestamp: serverTimestamp()
-      });
-      setNewMessage('');
-    } catch (error) { console.error(error); }
-  };
-
-  const togglePlayerStatus = (id) => {
-    setRoster(current => current.map(p => {
-      if (p.id === id) return { ...p, status: p.status === 'active' ? 'bench' : 'active' };
-      return p;
-    }));
-  };
-
-  const toggleTradeBlock = (id) => {
-    setRoster(current => current.map(p => {
-      if (p.id === id) return { ...p, isOnBlock: !p.isOnBlock };
-      return p;
-    }));
-  };
-
-  // Get active/bench
-  const activePlayers = roster.filter(p => p.status === 'active');
-  const benchPlayers = roster.filter(p => p.status === 'bench');
-
-  // Get trade block players (mocked from other teams + my team)
-  const tradeBlockPlayers = [
-    ...roster.filter(p => p.isOnBlock),
-    createPlayer('tb1', "D. Adams", "WR", "LAR", 6.60, 'bench'), // Mock
-    createPlayer('tb2', "T. Etienne", "RB", "JAX", 19.30, 'bench'), // Mock
-  ];
-  // Manually set team/owner for mock trade block players for display
-  tradeBlockPlayers[1].owner = "Liam";
-  tradeBlockPlayers[2].owner = "Matthew";
-
-  const NavItem = ({ id, icon: Icon, label }) => (
-    <button
-      onClick={() => { setActiveTab(id); setIsMobileMenuOpen(false); setSelectedMatchup(null); }}
-      className={`flex items-center space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
-        activeTab === id 
-          ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' 
-          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-      }`}
-    >
-      <Icon size={20} />
-      <span className="font-medium">{label}</span>
-    </button>
-  );
-
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex font-sans text-slate-900 dark:text-slate-100">
-      
-      {/* Sidebar */}
-      <aside className="hidden lg:flex w-64 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex-col fixed h-full z-10">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center space-x-2">
-          <div className="bg-indigo-600 p-2 rounded-lg">
-            <Trophy className="text-white" size={24} />
-          </div>
-          <span className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">DynastyHub</span>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-1">
-          <NavItem id="dashboard" icon={Shield} label="League Home" />
-          <NavItem id="myteam" icon={Users} label="My Team" />
-          <NavItem id="matchups" icon={Calendar} label="Matchups" />
-          <NavItem id="players" icon={ArrowLeftRight} label="Trade Block" />
-          <NavItem id="newsletter" icon={Newspaper} label="Newsletter" />
-          <NavItem id="chat" icon={MessageSquare} label="League Chat" />
-        </nav>
-
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <button 
-            onClick={() => setIsWriterModalOpen(true)}
-            className="flex items-center space-x-3 p-2 w-full hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-colors"
-          >
-            <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-              {writerName ? writerName.substring(0,2).toUpperCase() : 'AS'}
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-slate-900 dark:text-white">{writerName || "AlexSeguin"}</p>
-              <p className="text-xs text-emerald-600">Hurts So Good</p>
-            </div>
-            <Settings size={16} className="text-slate-400" />
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed w-full bg-white dark:bg-slate-950 z-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between p-4">
-        <div className="flex items-center space-x-2">
-          <Trophy className="text-indigo-600" size={24} />
-          <span className="font-bold text-lg">DynastyHub</span>
-        </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 bg-white dark:bg-slate-950 z-10 pt-20 px-6">
-          <nav className="space-y-2">
-            <NavItem id="dashboard" icon={Shield} label="League Home" />
-            <NavItem id="myteam" icon={Users} label="My Team" />
-            <NavItem id="matchups" icon={Calendar} label="Matchups" />
-            <NavItem id="players" icon={ArrowLeftRight} label="Trade Block" />
-            <NavItem id="newsletter" icon={Newspaper} label="Newsletter" />
-            <NavItem id="chat" icon={MessageSquare} label="League Chat" />
-          </nav>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <main className="flex-1 lg:ml-64 pt-20 lg:pt-0 min-h-screen">
-        
-        {/* Top Header */}
-        <header className="hidden lg:flex items-center justify-between px-8 py-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-10 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {activeTab === 'dashboard' ? LEAGUE_NAME : 
-               activeTab === 'newsletter' ? 'League Insider' :
-               activeTab === 'myteam' ? 'Hurts So Good' : 
-               activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-            </h2>
-            <p className="text-sm text-slate-500">Week {CURRENT_WEEK} • Season 2024</p>
-          </div>
-          <div className="flex items-center space-x-4">
-             {!writerName && (
-               <button 
-                 onClick={() => setIsWriterModalOpen(true)}
-                 className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800"
-               >
-                 Log In
-               </button>
-             )}
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">League Active</span>
-             </div>
-          </div>
-        </header>
-
-        {/* Dynamic Content */}
-        <div className="p-4 lg:p-8 max-w-7xl mx-auto">
-          
-          {/* DASHBOARD VIEW */}
-          {activeTab === 'dashboard' && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard title="League Rank" value="#4" subtext="Playoff Contender" trend="up" color="bg-indigo-500" />
-                <StatCard title="Points For" value="1133.5" subtext="4th in League" trend="up" color="bg-emerald-500" />
-                <StatCard title="Record" value="7-4" subtext="Win Streak: 1" trend="up" color="bg-blue-500" />
-                <StatCard title="Trade Interest" value="High" subtext="2 Offers Pending" trend="up" color="bg-pink-500" />
-              </div>
-
-              <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                  <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                    <h3 className="font-bold text-lg">Standings</h3>
-                    <span className="text-xs text-slate-400">Click team to view roster</span>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 font-medium">
-                        <tr>
-                          <th className="px-6 py-4">Rank</th>
-                          <th className="px-6 py-4">Team</th>
-                          <th className="px-6 py-4 text-center">Record</th>
-                          <th className="px-6 py-4 text-right">PF</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                        {teams.map((team) => (
-                          <tr 
-                            key={team.id} 
-                            onClick={() => team.roster ? setSelectedTeam(team) : null}
-                            className={`hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer ${team.id === 4 ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`}
-                          >
-                            <td className="px-6 py-4">
-                              <span className={`w-6 h-6 inline-flex items-center justify-center rounded-full text-xs font-bold 
-                                ${team.rank === 1 ? 'bg-yellow-100 text-yellow-700' : 
-                                  team.rank === 2 ? 'bg-gray-100 text-gray-700' : 
-                                  team.rank === 3 ? 'bg-orange-100 text-orange-800' : 'text-slate-500'}`}>
-                                {team.rank}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center space-x-3">
-                                <div className={`w-8 h-8 rounded-full ${team.avatar}`}></div>
-                                <div>
-                                  <p className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                    {team.name}
-                                    {team.roster && <Eye size={14} className="text-indigo-400" />}
-                                  </p>
-                                  <p className="text-xs text-slate-400">{team.owner}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-center font-medium">{team.wins}-{team.losses}</td>
-                            <td className="px-6 py-4 text-right text-slate-600 dark:text-slate-300">{team.pts}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                    {/* Weekly Matchup */}
-                    <div className="bg-indigo-900 text-white rounded-xl shadow-lg p-6 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
-                      <h3 className="font-bold text-lg mb-6 relative z-10">This Week's Result</h3>
-                      
-                      <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold border-2 border-white/20">
-                            AS
-                          </div>
-                          <p className="font-bold text-sm">Hurts So Good</p>
-                          <p className="text-indigo-200 text-xs">7-4</p>
-                        </div>
-                        <div className="text-center px-4">
-                          <span className="text-2xl font-bold font-mono">VS</span>
-                          <p className="text-xs text-indigo-300 mt-1">Final</p>
-                        </div>
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-teal-500 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold border-2 border-white/20 shadow-lg shadow-teal-900/50">
-                            IR
-                          </div>
-                          <p className="font-bold text-sm">Injured Reserve</p>
-                          <p className="text-indigo-200 text-xs">2-9</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 relative z-10">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-indigo-200">Score</span>
-                          <span className="font-bold">88.90 - 76.34</span>
-                        </div>
-                        <div className="w-full bg-indigo-800 rounded-full h-2">
-                          <div className="bg-emerald-400 h-2 rounded-full w-[55%]"></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Activity Feed Mini */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
-                       <h3 className="font-bold mb-3 text-sm uppercase text-slate-500">Recent Activity</h3>
-                       <div className="space-y-3 text-sm">
-                          <div className="flex items-center gap-2">
-                             <RefreshCw size={14} className="text-blue-500"/>
-                             <span><span className="font-bold">Pierre</span> traded <span className="font-bold">D. Singletary</span> to <span className="font-bold">Scott</span></span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                             <UserPlus size={14} className="text-emerald-500"/>
-                             <span><span className="font-bold">Nick</span> added <span className="font-bold">M. Wilson</span></span>
-                          </div>
-                       </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* NEWSLETTER VIEW */}
-          {activeTab === 'newsletter' && (
-            <div className="max-w-3xl mx-auto">
-               <div className="flex justify-between items-center mb-8">
-                 <div>
-                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                     <Newspaper className="text-indigo-600" /> 
-                     League Insider
-                   </h3>
-                   <p className="text-slate-500 text-sm mt-1">Latest news, rumors, and hot takes.</p>
-                 </div>
-                 <button 
-                   onClick={() => writerName ? setIsWriting(!isWriting) : setIsWriterModalOpen(true)}
-                   className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                 >
-                   {isWriting ? <X size={18}/> : <PenTool size={18}/>}
-                   {isWriting ? 'Cancel' : 'Write Article'}
-                 </button>
-               </div>
-
-               {/* Write Article Form */}
-               {isWriting && (
-                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-indigo-100 dark:border-indigo-900 mb-8 animate-in fade-in slide-in-from-top-4">
-                   <h4 className="font-bold text-lg mb-4 text-slate-800 dark:text-white">New Article</h4>
-                   <div className="space-y-4">
-                     <div>
-                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Title</label>
-                       <input 
-                         type="text"
-                         value={newArticle.title}
-                         onChange={(e) => setNewArticle({...newArticle, title: e.target.value})}
-                         placeholder="e.g. Why I'm Trading Justin Jefferson"
-                         className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                       />
-                     </div>
-                     
-                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                           <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tag</label>
-                           <select 
-                             value={newArticle.tag}
-                             onChange={(e) => setNewArticle({...newArticle, tag: e.target.value})}
-                             className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                           >
-                             <option>News</option>
-                             <option>Recap</option>
-                             <option>Rumor</option>
-                             <option>Trash Talk</option>
-                             <option>Trade Block</option>
-                           </select>
-                        </div>
-                     </div>
-
-                     <div>
-                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Content</label>
-                       <textarea 
-                         rows="6"
-                         value={newArticle.content}
-                         onChange={(e) => setNewArticle({...newArticle, content: e.target.value})}
-                         placeholder="Spill the tea..."
-                         className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                       ></textarea>
-                     </div>
-                     
-                     <div className="flex justify-end pt-2">
-                       <button 
-                         onClick={handlePostArticle}
-                         disabled={!newArticle.title || !newArticle.content || isPosting}
-                         className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                       >
-                         {isPosting ? <Activity className="animate-spin" size={18}/> : <ArrowRight size={18}/>}
-                         {isPosting ? 'Publishing...' : 'Publish Article'}
-                       </button>
-                     </div>
-                   </div>
-                 </div>
-               )}
-
-               <div className="space-y-6">
-                 {articles.map(article => (
-                   <NewsCard key={article.id} article={article} />
-                 ))}
-               </div>
-            </div>
-          )}
-
-          {/* MY TEAM VIEW */}
-          {activeTab === 'myteam' && (
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                  <h3 className="font-bold text-lg text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    Starters
-                  </h3>
-                  <div className="text-sm text-slate-500">
-                    Score: <span className="font-bold text-slate-900 dark:text-white">88.90</span>
-                  </div>
-                </div>
-                <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {activePlayers.map(player => (
-                    <PlayerRow key={player.id} player={player} onAction={togglePlayerStatus} isRoster={true} showTrade={true} onTradeToggle={toggleTradeBlock} />
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                   <h3 className="font-bold text-lg text-slate-600 dark:text-slate-400">Bench</h3>
-                </div>
-                <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {benchPlayers.map(player => (
-                    <PlayerRow key={player.id} player={player} onAction={togglePlayerStatus} isRoster={true} showTrade={true} onTradeToggle={toggleTradeBlock} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* MATCHUPS VIEW */}
-          {activeTab === 'matchups' && (
-            <div className="space-y-4 max-w-3xl mx-auto">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold">League Scoreboard</h3>
-                <p className="text-slate-500">Week {CURRENT_WEEK} Results • Click to view details</p>
-              </div>
-              
-              {selectedMatchup ? (
-                <div className="space-y-4">
-                   <button onClick={() => setSelectedMatchup(null)} className="text-sm text-indigo-500 hover:underline mb-4 flex items-center gap-1">
-                      <ArrowRight className="rotate-180" size={14} /> Back to scoreboard
-                   </button>
-                   
-                   {/* Detailed Comparison View */}
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-4">
-                         <h3 className="font-bold text-center p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">{teams.find(t=>t.id===selectedMatchup.team1Id)?.name}</h3>
-                         <div className="space-y-2">
-                            {teams.find(t=>t.id===selectedMatchup.team1Id)?.roster?.filter(p=>p.status==='active').map(p => (
-                               <div key={p.id} className="bg-white dark:bg-slate-800 p-3 rounded-lg flex justify-between items-center shadow-sm">
-                                  <div className="text-sm font-bold">{p.name} <span className="text-xs text-slate-400 block">{p.position}</span></div>
-                                  <div className="font-bold text-emerald-600">{p.score}</div>
-                               </div>
-                            ))}
-                         </div>
-                      </div>
-                      <div className="space-y-4">
-                         <h3 className="font-bold text-center p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">{teams.find(t=>t.id===selectedMatchup.team2Id)?.name}</h3>
-                         <div className="space-y-2">
-                            {teams.find(t=>t.id===selectedMatchup.team2Id)?.roster?.filter(p=>p.status==='active').map(p => (
-                               <div key={p.id} className="bg-white dark:bg-slate-800 p-3 rounded-lg flex justify-between items-center shadow-sm">
-                                  <div className="font-bold text-emerald-600">{p.score}</div>
-                                  <div className="text-sm font-bold text-right">{p.name} <span className="text-xs text-slate-400 block">{p.position}</span></div>
-                               </div>
-                            ))}
-                         </div>
-                      </div>
-                   </div>
-                </div>
-              ) : (
-                MATCHUPS.map(matchup => (
-                  <MatchupRow key={matchup.id} matchup={matchup} teams={teams} onClick={setSelectedMatchup} />
-                ))
-              )}
-            </div>
-          )}
-
-          {/* TRADE BLOCK VIEW (Updated "Players" tab) */}
-          {activeTab === 'players' && (
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                 <div>
-                    <h3 className="text-xl font-bold">Trade Block</h3>
-                    <p className="text-sm text-slate-500">Players marked available by their owners</p>
-                 </div>
-              </div>
-
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                   {tradeBlockPlayers.length > 0 ? tradeBlockPlayers.map(player => (
-                     <div key={player.id} className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                       <div className="flex items-center space-x-4">
-                         <div className="bg-pink-100 text-pink-600 p-2 rounded text-xs font-bold w-12 text-center">
-                           {player.position}
-                         </div>
-                         <div>
-                           <p className="font-bold text-slate-900 dark:text-white">{player.name}</p>
-                           <p className="text-xs text-slate-500">Owner: {player.owner || 'Me'}</p>
-                         </div>
-                       </div>
-                       <div className="flex items-center gap-6">
-                         <div className="text-right">
-                            <span className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">Avg: {player.score}</span>
-                         </div>
-                         <button className="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors">
-                            Make Offer
-                         </button>
-                       </div>
-                     </div>
-                   )) : (
-                     <div className="p-8 text-center text-slate-500">No players currently on the block. Mark yours in "My Team"!</div>
-                   )}
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* LIVE CHAT VIEW */}
-          {activeTab === 'chat' && (
-             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 h-[600px] flex flex-col">
-               <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                 <h3 className="font-bold flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"></div> League Chat</h3>
-                 {!writerName && <span className="text-xs text-red-500 cursor-pointer hover:underline" onClick={()=>setIsWriterModalOpen(true)}>Log in to chat</span>}
-               </div>
-               
-               <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900/50">
-                 {messages.length === 0 && <div className="text-center text-slate-400 mt-10">Be the first to say something!</div>}
-                 {messages.map(msg => {
-                   const isMe = msg.user === writerName;
-                   return (
-                     <div key={msg.id} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
-                       <div className={`w-8 h-8 rounded-full flex-shrink-0 ${msg.avatar} flex items-center justify-center text-white text-[10px] font-bold uppercase`}>
-                          {msg.user.substring(0,2)}
-                       </div>
-                       <div className={`${isMe ? 'text-right' : 'text-left'} max-w-[75%]`}>
-                         <div className={`flex items-center gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
-                           <span className="font-bold text-xs text-slate-600 dark:text-slate-300">{msg.user}</span>
-                           <span className="text-[10px] text-slate-400">{msg.timestamp ? new Date(msg.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '...'}</span>
-                         </div>
-                         <p className={`text-sm mt-1 p-3 rounded-2xl shadow-sm ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white rounded-tl-none'}`}>
-                           {msg.text}
-                         </p>
-                       </div>
-                     </div>
-                   );
-                 })}
-                 <div ref={messagesEndRef} />
-               </div>
-
-               <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-b-xl">
-                 <div className="flex gap-2">
-                   <input 
-                     type="text" 
-                     value={newMessage}
-                     onChange={(e) => setNewMessage(e.target.value)}
-                     disabled={!writerName}
-                     placeholder={writerName ? "Type a message..." : "Log in to chat..."}
-                     className="flex-1 bg-slate-100 dark:bg-slate-900 border-0 rounded-full px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                   />
-                   <button 
-                     type="submit"
-                     disabled={!writerName || !newMessage.trim()}
-                     className="bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                   >
-                     <Send size={18} />
-                   </button>
-                 </div>
-               </form>
-             </div>
-          )}
-
-        </div>
-      </main>
-
-      {/* WRITER NAME MODAL */}
-      {isWriterModalOpen && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-sm shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                <User size={24} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white">League Login</h3>
-              <p className="text-slate-500 text-sm">Enter your team name or handle.</p>
-            </div>
-            
-            <form onSubmit={handleSetWriterName}>
-              <input 
-                type="text" 
-                placeholder="e.g. AlexSeguin"
-                value={writerName}
-                onChange={(e) => setWriterName(e.target.value)}
-                className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-center"
-                autoFocus
-              />
-              <button 
-                type="submit" 
-                className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors"
-              >
-                Enter League
-              </button>
-              <button 
-                type="button"
-                onClick={() => setIsWriterModalOpen(false)}
-                className="w-full mt-2 py-2 text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
-              >
-                Cancel
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* TEAM ROSTER MODAL */}
-      {selectedTeam && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-               <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${selectedTeam.avatar}`}></div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">{selectedTeam.name}</h3>
-                    <p className="text-sm text-slate-500">{selectedTeam.owner}</p>
-                  </div>
-               </div>
-               <button onClick={() => setSelectedTeam(null)} className="text-slate-400 hover:text-slate-600">
-                 <X size={24} />
-               </button>
-            </div>
-            
-            <div className="overflow-y-auto flex-1 pr-2">
-               <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
-                 {selectedTeam.roster && selectedTeam.roster.map(player => (
-                   <PlayerRow key={player.id} player={player} isRoster={false} />
-                 ))}
-                 {!selectedTeam.roster && (
-                   <div className="p-8 text-center text-slate-500">
-                     Roster data not available for this team.
-                   </div>
-                 )}
-               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
-}
+</body>
+</html>
