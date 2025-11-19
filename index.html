@@ -1,269 +1,810 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diab Fantasy Football League Official Site</title>
-    <style>
-        /* General Styling */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #f4f4f4;
-        }
+import React, { useState, useEffect } from 'react';
+import { 
+  Trophy, 
+  Shield, 
+  Users, 
+  Calendar, 
+  MessageSquare, 
+  Search, 
+  Bell, 
+  TrendingUp, 
+  TrendingDown, 
+  UserPlus, 
+  Settings, 
+  Menu, 
+  X, 
+  ArrowRight, 
+  Activity,
+  Newspaper,
+  PenTool,
+  User
+} from 'lucide-react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  signInAnonymously, 
+  signInWithCustomToken 
+} from 'firebase/auth';
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  onSnapshot, 
+  query, 
+  serverTimestamp 
+} from 'firebase/firestore';
 
-        header {
-            background: #0d1b2a;
-            color: #fff;
-            text-align: center;
-            padding: 40px;
-            font-size: 3rem;
-            letter-spacing: 2px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
+// --- FIREBASE CONFIGURATION ---
+const firebaseConfig = JSON.parse(__firebase_config);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        nav {
-            display: flex;
-            justify-content: center;
-            background: #1b263b;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
+// --- MOCK DATA (Based on Uploaded Images) ---
+const LEAGUE_NAME = "Windsor Dynasty League"; // Inferred context
+const CURRENT_WEEK = 12; // Inferred from records (9-2, 8-3 etc sum to 11 games played)
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 30px;
-            padding: 15px 30px;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            transition: background 0.3s, color 0.3s;
-        }
+const MOCK_TEAMS = [
+  { id: 1, name: "Que Rico!!", owner: "louisdiab", wins: 9, losses: 2, pts: 1028.66, rank: 1, avatar: "bg-indigo-500" },
+  { id: 2, name: "Situ's Window Cleaners", owner: "PierreDiab", wins: 8, losses: 3, pts: 1229.30, rank: 2, avatar: "bg-orange-500" },
+  { id: 3, name: "NorkCityBrawlers", owner: "almurrieta22", wins: 8, losses: 3, pts: 1163.50, rank: 3, avatar: "bg-green-600" },
+  { id: 4, name: "Hurts So Good", owner: "AlexSeguin", wins: 7, losses: 4, pts: 1133.48, rank: 4, avatar: "bg-emerald-500" },
+  { id: 5, name: "JustwinBaby!", owner: "paulholub", wins: 7, losses: 4, pts: 1117.72, rank: 5, avatar: "bg-green-400" },
+  { id: 6, name: "The Charbonnet Sauvignons", owner: "NickSeguin", wins: 7, losses: 4, pts: 1065.88, rank: 6, avatar: "bg-red-400" },
+  { id: 7, name: "Windsor Express", owner: "Grabka", wins: 6, losses: 5, pts: 1093.36, rank: 7, avatar: "bg-purple-500" },
+  { id: 8, name: "Minimum Magnets", owner: "thesungawd", wins: 5, losses: 6, pts: 964.22, rank: 8, avatar: "bg-orange-400" },
+  { id: 9, name: "#Tanking", owner: "bdiab", wins: 3, losses: 8, pts: 1103.04, rank: 9, avatar: "bg-blue-400" },
+  { id: 10, name: "Liam Mastronardi", owner: "LeeMastro", wins: 2, losses: 9, pts: 992.72, rank: 10, avatar: "bg-yellow-500" },
+  { id: 11, name: "Injured Reserve", owner: "ScottyK37", wins: 2, losses: 9, pts: 963.76, rank: 11, avatar: "bg-teal-400" },
+  { id: 12, name: "MCDC", owner: "PeteDiab", wins: 2, losses: 9, pts: 869.56, rank: 12, avatar: "bg-blue-800" },
+];
 
-        nav a:hover {
-            background-color: #e43f5a;
-            color: white;
-        }
+// Alex's Roster (Hurts So Good)
+const MY_ROSTER = [
+  { id: 101, name: "J. Hurts", position: "QB", team: "PHI", proj: 21.69, score: 14.50, status: "active", opponent: "DET" },
+  { id: 102, name: "K. Gainwell", position: "RB", team: "PHI", proj: 8.35, score: 26.00, status: "active", opponent: "PIT" },
+  { id: 103, name: "B. Hall", position: "RB", team: "NYJ", proj: 12.10, score: 7.40, status: "active", opponent: "NE" },
+  { id: 104, name: "C. Lamb", position: "WR", team: "DAL", proj: 17.04, score: 15.10, status: "active", opponent: "LV" },
+  { id: 105, name: "T. Franklin", position: "WR", team: "DEN", proj: 8.04, score: 10.40, status: "active", opponent: "KC" },
+  { id: 106, name: "Z. Ertz", position: "TE", team: "WAS", proj: 8.52, score: 6.20, status: "active", opponent: "MIA" },
+  { id: 107, name: "J. Jeudy", position: "FLEX", team: "CLE", proj: 6.89, score: 3.60, status: "active", opponent: "BAL" },
+  { id: 108, name: "M. Washington", position: "FLEX", team: "MIA", proj: 7.77, score: 5.70, status: "active", opponent: "WAS" },
+  // Bench
+  { id: 109, name: "J. McCarthy", position: "QB", team: "MIN", proj: 17.31, score: 6.00, status: "bench", opponent: "CHI" },
+  { id: 110, name: "J. Taylor", position: "RB", team: "IND", proj: 0.00, score: 0.00, status: "bench", opponent: "BYE" },
+  { id: 111, name: "E. Ayomanor", position: "WR", team: "TEN", proj: 6.76, score: 2.10, status: "bench", opponent: "HOU" },
+  { id: 112, name: "K. Boutte", position: "WR", team: "NE", proj: 0.00, score: 0.00, status: "bench", opponent: "NYJ" },
+  { id: 113, name: "J. Smith", position: "TE", team: "PIT", proj: 6.58, score: 0.00, status: "bench", opponent: "CIN" },
+];
 
-        main {
-            margin: 40px auto;
-            width: 90%;
-            max-width: 1200px;
-        }
+const WEEKLY_MATCHUPS = [
+  { id: 1, team1: "Que Rico!!", score1: 98.14, team2: "Situ's Window Cleaners", score2: 91.52, status: "Final" },
+  { id: 2, team1: "Liam Mastronardi", score1: 98.56, team2: "The Charbonnet Sauvignons", score2: 112.38, status: "Final" },
+  { id: 3, team1: "Hurts So Good", score1: 88.90, team2: "Injured Reserve", score2: 76.34, status: "Final" },
+  { id: 4, team1: "#Tanking", score1: 118.36, team2: "MCDC", score2: 67.82, status: "Final" },
+  { id: 5, team1: "NorkCityBrawlers", score1: 109.38, team2: "Minimum Magnets", score2: 81.92, status: "Final" },
+  { id: 6, team1: "JustwinBaby!", score1: 97.14, team2: "Windsor Express", score2: 84.44, status: "Final" },
+];
 
-        .section {
-            margin-bottom: 40px;
-            padding: 30px;
-            background: #162447;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            text-align: center;
-        }
+const WAIVER_WIRE = [
+  { id: 201, name: "P. Nacua", position: "WR", team: "LAR", proj: 14.5, pctOwned: 78, trend: "up" },
+  { id: 202, name: "K. Williams", position: "RB", team: "LAR", proj: 15.2, pctOwned: 85, trend: "up" },
+  { id: 203, name: "C. Stroud", position: "QB", team: "HOU", proj: 19.8, pctOwned: 65, trend: "up" },
+  { id: 204, name: "J. Ford", position: "RB", team: "CLE", proj: 11.5, pctOwned: 45, trend: "flat" },
+  { id: 205, name: "S. LaPorta", position: "TE", team: "DET", proj: 10.8, pctOwned: 60, trend: "up" },
+];
 
-        .section h2 {
-            font-size: 2.5rem;
-            color: #e43f5a;
-            margin-bottom: 25px;
-        }
+const MESSAGES = [
+  { id: 1, user: "louisdiab", text: "9-2 baby! Catch me if you can.", time: "10:42 AM", avatar: "bg-indigo-500" },
+  { id: 2, user: "PierreDiab", text: "Window Cleaners coming for that #1 spot.", time: "10:45 AM", avatar: "bg-orange-500" },
+  { id: 3, user: "AlexSeguin", text: "Kenny G with 26 points?! Saved my week.", time: "10:48 AM", avatar: "bg-emerald-500" },
+];
 
-        .section p {
-            font-size: 1.8rem;
-            line-height: 2.5rem;
-            color: #dcdcdc;
-            font-weight: bold;
-            margin: 10px 0;
-        }
+// --- COMPONENTS ---
 
-        .highlight {
-            color: #f1c40f;
-        }
+const StatCard = ({ title, value, trend, subtext, color }) => (
+  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{value}</h3>
+      </div>
+      <div className={`p-2 rounded-lg ${color} bg-opacity-10`}>
+        {trend === 'up' ? <TrendingUp size={20} className={color.replace('bg-', 'text-')} /> : 
+         trend === 'down' ? <TrendingDown size={20} className={color.replace('bg-', 'text-')} /> :
+         <Activity size={20} className={color.replace('bg-', 'text-')} />}
+      </div>
+    </div>
+    {subtext && <p className="text-xs text-slate-400 mt-2">{subtext}</p>}
+  </div>
+);
 
-        .section h3 {
-            color: #f4f4f4;
-            font-size: 1.5rem;
-            margin: 25px 0 10px;
-        }
-
-        footer {
-            background: #1b1b2f;
-            color: #fff;
-            text-align: center;
-            padding: 30px 0;
-            margin-top: 50px;
-            font-size: 1rem;
-            letter-spacing: 1px;
-        }
-
-        /* Dropdown Alert Styling */
-        .alert-container {
-            background-color: #e43f5a;
-            padding: 20px;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .alert-message {
-            display: none;
-            background-color: #fff;
-            color: #333;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-    <script>
-        function toggleAlert() {
-            var message = document.getElementById("alertMessage");
-            if (message.style.display === "block") {
-                message.style.display = "none";
-            } else {
-                message.style.display = "block";
-            }
-        }
-    </script>
-</head>
-<body>
-    <header>
-        Diab Fantasy Football League
-    </header>
-
-    <!-- Navigation Menu -->
-    <nav>
-        <a href="#standings">Standings</a>
-        <a href="#playoffs">Playoffs</a>
-        <a href="#rules">League Rules</a>
-        <a href="#news">News</a>
-    </nav>
-
-    <!-- YouTube Embed for Autoplay -->
-    <iframe width="0" height="0" src="https://www.youtube.com/embed/jlqml744E9k?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>
-
-    <main>
-        <!-- Alert Dropdown -->
-        <div class="alert-container" onclick="toggleAlert()">
-            IMPORTANT: Waivers process at 3 AM on Wednesday, December 24th, 2024. 
-            Click for more details.
+const PlayerRow = ({ player, onAction, isRoster }) => {
+  const isBench = player.status === 'bench';
+  
+  return (
+    <div className={`flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700 ${isBench ? 'bg-slate-50 dark:bg-slate-800/50' : 'bg-white dark:bg-slate-800'}`}>
+      <div className="flex items-center space-x-4 flex-1">
+        <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs 
+          ${player.position === 'QB' ? 'bg-red-100 text-red-600' : 
+            player.position === 'RB' ? 'bg-green-100 text-green-600' : 
+            player.position === 'WR' ? 'bg-blue-100 text-blue-600' : 
+            player.position.includes('TE') ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'}`}>
+          {player.position.substring(0,2)}
         </div>
-        <div id="alertMessage" class="alert-message">
-            <p>🔔 Waiver claims will not be processed after the 3 AM deadline on Wednesday, December 24th, 2024. 
-            Make sure to submit your claims by Tuesday night to ensure they are processed. Late submissions 
-            will roll over to the following week. Please double-check your waiver priorities to maximize your 
-            chances of acquiring key free agents.</p>
+        <div>
+          <p className="font-bold text-slate-800 dark:text-white">{player.name}</p>
+          <p className="text-xs text-slate-500">{player.team} • vs {player.opponent || 'BYE'}</p>
         </div>
+      </div>
+      
+      <div className="flex items-center space-x-6 md:space-x-12">
+        <div className="text-center hidden md:block">
+          <p className="text-xs text-slate-400">Score</p>
+          <p className={`font-medium ${player.score > 15 ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{player.score}</p>
+        </div>
+        
+        {isRoster && (
+          <button 
+            onClick={() => onAction(player.id)}
+            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors
+              ${player.status === 'active' 
+                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' 
+                : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}`}
+          >
+            {player.status === 'active' ? 'STARTING' : 'BENCH'}
+          </button>
+        )}
+        
+        {!isRoster && (
+           <button className="p-2 rounded-full hover:bg-emerald-50 text-emerald-600">
+             <UserPlus size={18} />
+           </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
-        <!-- Standings Section -->
-        <section id="standings" class="section">
-            <h2>League Standings</h2>
-            <img src="https://media-hosting.imagekit.io//3cb722f9059c4ed1/Screenshot%202024-12-10%20091602.png" 
-                 alt="League Standings" 
-                 style="width: 100%; border-radius: 10px;">
-        </section>
+const NewsCard = ({ article }) => (
+  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 mb-4 hover:shadow-md transition-shadow">
+    <div className="flex justify-between items-start mb-2">
+      <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 text-xs rounded-md font-semibold uppercase tracking-wide">
+        {article.tag || 'League News'}
+      </span>
+      <span className="text-xs text-slate-400">
+        {article.timestamp?.seconds 
+          ? new Date(article.timestamp.seconds * 1000).toLocaleDateString() 
+          : 'Just now'}
+      </span>
+    </div>
+    <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{article.title}</h4>
+    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{article.content}</p>
+    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+      <div className="flex items-center space-x-2">
+        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">
+          {article.author ? article.author.substring(0,2).toUpperCase() : 'AN'}
+        </div>
+        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">by {article.author || 'Anonymous'}</span>
+      </div>
+    </div>
+  </div>
+);
 
-        <!-- Playoffs Section -->
-        <section id="playoffs" class="section">
-            <h2>Playoff Matchups</h2>
-            <p>🏆 <span class="highlight">CHAMPIONSHIP GAME:</span> Liam vs Louis</p>
-            <p>🥉 <span class="highlight">3rd Place GAME:</span> Scott vs Pete</p>
-            <p>🎖️ <span class="highlight">7th Place GAME:</span> Ben vs Sam</p>
-            <p>🏅 <span class="highlight">9th Place GAME:</span> Krysztof vs Matt</p>
-        </section>
+const MatchupRow = ({ matchup }) => (
+  <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div className="flex-1 w-full flex justify-between items-center sm:justify-start sm:gap-4">
+      <div className="text-right sm:text-left flex-1">
+        <p className={`font-bold ${matchup.score1 > matchup.score2 ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{matchup.team1}</p>
+        <p className="text-2xl font-bold">{matchup.score1}</p>
+      </div>
+    </div>
+    
+    <div className="px-4 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs font-bold text-slate-500">
+      FINAL
+    </div>
 
-        <section id="news" class="section">
-    <h2>Latest News</h2>
+    <div className="flex-1 w-full flex justify-between items-center sm:justify-end sm:gap-4">
+       <div className="text-left sm:text-right flex-1">
+        <p className={`font-bold ${matchup.score2 > matchup.score1 ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{matchup.team2}</p>
+        <p className="text-2xl font-bold">{matchup.score2}</p>
+      </div>
+    </div>
+  </div>
+);
 
-    <!-- AI's Picks Section -->
-    <h3>🏈 AI's Picks: Who Will Win?</h3>
-    <p>After analyzing the rosters, matchups, and player performances, **Louis' team** is predicted to win this fantasy showdown in half-PPR scoring. Louis' team features elite talent in Saquon Barkley, who thrives in both the rushing and passing game. Barkley’s ability to accumulate yards and receptions provides a stable floor with significant upside. Additionally, Jayden Daniels’ dual-threat nature as a rushing quarterback adds consistent points that can swing the matchup in Louis’ favor.</p>
+export default function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [roster, setRoster] = useState(MY_ROSTER);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Auth & Newsletter State
+  const [user, setUser] = useState(null);
+  const [writerName, setWriterName] = useState('');
+  const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
+  const [articles, setArticles] = useState([]);
+  const [isWriting, setIsWriting] = useState(false);
+  const [newArticle, setNewArticle] = useState({ title: '', content: '', tag: 'News' });
+  const [isPosting, setIsPosting] = useState(false);
 
-    <p>Louis' wide receiver corps, led by Nico Collins and Jauan Jennings, is well-rounded and capable of producing double-digit points, even in half-PPR formats. Aaron Jones, though slightly volatile, remains a dependable RB2 option with goal-line upside. Pat Freiermuth offers a red-zone target at tight end, boosting his potential to score touchdowns. This combination of star power and depth allows Louis' team to edge out Liam’s lineup, which relies heavily on Ja’Marr Chase and Tua Tagovailoa to carry the scoring load.</p>
+  // 1. Auth Setup
+  useEffect(() => {
+    const initAuth = async () => {
+      if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+        await signInWithCustomToken(auth, __initial_auth_token);
+      } else {
+        await signInAnonymously(auth);
+      }
+    };
+    initAuth();
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      const savedName = localStorage.getItem('fantasy_writer_name');
+      if (savedName) setWriterName(savedName);
+    });
+    return () => unsubscribe();
+  }, []);
 
-    <p>While Liam’s roster possesses explosive players, the variance at RB2 and potential injury risks to Mark Andrews create uncertainty. In a close contest, Louis' balanced attack and reliable scoring options across multiple positions make him the favorite to win.</p>
+  // 2. Newsletter Data Fetching
+  useEffect(() => {
+    if (!user) return;
+    
+    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'newsletter'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      fetched.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+      setArticles(fetched);
+    }, (error) => {
+      console.error("Error fetching newsletter:", error);
+    });
 
-    <p>**Final Score Prediction (Half-PPR):**  
-    - **Louis' Team:** 138.9  
-    - **Liam's Team:** 131.4</p>
+    return () => unsubscribe();
+  }, [user]);
 
-    <p>Louis' edge in consistent performers like Barkley and Daniels should help him secure the victory by a narrow margin.</p>
+  const handleSetWriterName = (e) => {
+    e.preventDefault();
+    if (writerName.trim()) {
+      localStorage.setItem('fantasy_writer_name', writerName);
+      setIsWriterModalOpen(false);
+    }
+  };
 
-    <hr>
+  const handlePostArticle = async (e) => {
+    e.preventDefault();
+    if (!user || !writerName || !newArticle.title || !newArticle.content) return;
 
-    <!-- Week 17 Waiver Wire Article -->
-    <h3>🔥 Week 17 Waiver Wire Pickups</h3>
-    <p>Looking to strengthen your roster for the playoffs? Here are the top 10 waiver wire targets based on recent performances and projected opportunities. Suggested FAAB (Free Agent Acquisition Budget) amounts are included to help guide your bids.</p>
+    setIsPosting(true);
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'newsletter'), {
+        title: newArticle.title,
+        content: newArticle.content,
+        tag: newArticle.tag,
+        author: writerName,
+        authorId: user.uid,
+        timestamp: serverTimestamp()
+      });
+      setNewArticle({ title: '', content: '', tag: 'News' });
+      setIsWriting(false);
+    } catch (error) {
+      console.error("Error posting article:", error);
+    } finally {
+      setIsPosting(false);
+    }
+  };
 
-    <ol>
-        <li>
-            <strong>A. Rodgers (NYJ - QB)</strong>  
-            <br> <em>FAAB: 20-25%</em>  
-            <p>Aaron Rodgers is nearing a return and could provide immediate value for fantasy managers looking for a QB. His experience and poise make him a top-tier option for the stretch run. The Jets will likely unleash Rodgers as they push for the playoffs.</p>
-        </li>
+  const togglePlayerStatus = (id) => {
+    setRoster(current => current.map(p => {
+      if (p.id === id) {
+        return { ...p, status: p.status === 'active' ? 'bench' : 'active' };
+      }
+      return p;
+    }));
+  };
 
-        <li>
-            <strong>C. Rush (DAL - QB)</strong>  
-            <br> <em>FAAB: 10-15%</em>  
-            <p>Rush has proven capable when filling in for Dak Prescott. As the Cowboys gear up for playoff positioning, Rush could see more action. He’s a solid insurance policy at QB.</p>
-        </li>
+  const activePlayers = roster.filter(p => p.status === 'active');
+  const benchPlayers = roster.filter(p => p.status === 'bench');
 
-        <li>
-            <strong>D. Thompson-Robinson (CLE - QB)</strong>  
-            <br> <em>FAAB: 10%</em>  
-            <p>DTR offers dual-threat potential and has flashed in His last game. His rushing ability boosts his fantasy floor, making him valuable in deeper leagues or superflex formats.</p>
-        </li>
+  const NavItem = ({ id, icon: Icon, label }) => (
+    <button
+      onClick={() => { setActiveTab(id); setIsMobileMenuOpen(false); }}
+      className={`flex items-center space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
+        activeTab === id 
+          ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none' 
+          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+      }`}
+    >
+      <Icon size={20} />
+      <span className="font-medium">{label}</span>
+    </button>
+  );
 
-        <li>
-            <strong>W. Robinson (NYG - WR)</strong>  
-            <br> <em>FAAB: 12-18%</em>  
-            <p>Robinson is becoming a go-to target for the Giants. His target share makes him valuable in PPR leagues, and his role should grow as the Giants lean on their young core. Owners should be careful though, as he is not quite a YAC player.</p>
-        </li>
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex font-sans text-slate-900 dark:text-slate-100">
+      
+      {/* Sidebar */}
+      <aside className="hidden lg:flex w-64 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex-col fixed h-full z-10">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center space-x-2">
+          <div className="bg-indigo-600 p-2 rounded-lg">
+            <Trophy className="text-white" size={24} />
+          </div>
+          <span className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">DynastyHub</span>
+        </div>
+        
+        <nav className="flex-1 p-4 space-y-1">
+          <NavItem id="dashboard" icon={Shield} label="League Home" />
+          <NavItem id="myteam" icon={Users} label="My Team" />
+          <NavItem id="matchups" icon={Calendar} label="Matchups" />
+          <NavItem id="players" icon={Search} label="Players" />
+          <NavItem id="newsletter" icon={Newspaper} label="Newsletter" />
+          <NavItem id="chat" icon={MessageSquare} label="Trash Talk" />
+        </nav>
 
-        <li>
-            <strong>B. Cooks (DAL - WR)</strong>  
-            <br> <em>FAAB: 10-15%</em>  
-            <p>Cooks has big-play potential and is a vital part of the Cowboys’ passing attack. Especially with Ceedee Lamb's banged up shoulder, Cooks should be targeted more. His ability to produce yards after the catch gives him flex appeal in favorable matchups.</p>
-        </li>
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+          <button className="flex items-center space-x-3 p-2 w-full hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              AS
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium text-slate-900 dark:text-white">AlexSeguin</p>
+              <p className="text-xs text-emerald-600">Hurts So Good</p>
+            </div>
+            <Settings size={16} className="text-slate-400" />
+          </button>
+        </div>
+      </aside>
 
-        <li>
-            <strong>D. Moore (CAR - WR)</strong>  
-            <br> <em>FAAB: 8-10%</em>  
-            <p>Moore’s involvement is increasing, and the Panthers' passing game is shifting towards evaluation mode. Moore could benefit from additional targets, making him a sleeper add.</p>
-        </li>
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed w-full bg-white dark:bg-slate-950 z-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between p-4">
+        <div className="flex items-center space-x-2">
+          <Trophy className="text-indigo-600" size={24} />
+          <span className="font-bold text-lg">DynastyHub</span>
+        </div>
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <X /> : <Menu />}
+        </button>
+      </div>
 
-        <li>
-            <strong>T. Patrick (DET - WR)</strong>  
-            <br> <em>FAAB: 8%</em>  
-            <p>Patrick is working his way as a red-zone threat for the Lions and Patrick could emerge as a late-season difference-maker.</p>
-        </li>
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 bg-white dark:bg-slate-950 z-10 pt-20 px-6">
+          <nav className="space-y-2">
+            <NavItem id="dashboard" icon={Shield} label="League Home" />
+            <NavItem id="myteam" icon={Users} label="My Team" />
+            <NavItem id="matchups" icon={Calendar} label="Matchups" />
+            <NavItem id="players" icon={Search} label="Players" />
+            <NavItem id="newsletter" icon={Newspaper} label="Newsletter" />
+            <NavItem id="chat" icon={MessageSquare} label="Trash Talk" />
+          </nav>
+        </div>
+      )}
 
-        <li>
-            <strong>G. Calcaterra (PHI - TE)</strong>  
-            <br> <em>FAAB: 5-8%</em>  
-            <p>With Goedert banged up, Calcaterra will and has seen more opportunities. The Eagles offense features tight ends prominently, giving Calcaterra upside as a plug-and-play TE for fantasy managers. </p>
-        </li>
-    </ol>
+      {/* Main Content */}
+      <main className="flex-1 lg:ml-64 pt-20 lg:pt-0 min-h-screen">
+        
+        {/* Top Header */}
+        <header className="hidden lg:flex items-center justify-between px-8 py-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-10 border-b border-slate-100 dark:border-slate-800">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              {activeTab === 'dashboard' ? LEAGUE_NAME : 
+               activeTab === 'newsletter' ? 'League Insider' :
+               activeTab === 'myteam' ? 'Hurts So Good' : 
+               activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </h2>
+            <p className="text-sm text-slate-500">Week {CURRENT_WEEK} • Season 2024</p>
+          </div>
+          <div className="flex items-center space-x-4">
+             {writerName ? (
+               <div className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold border border-indigo-100">
+                 Writer: {writerName}
+               </div>
+             ) : (
+               <button 
+                 onClick={() => setIsWriterModalOpen(true)}
+                 className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800"
+               >
+                 Log In
+               </button>
+             )}
+             <button className="p-2 relative text-slate-500 hover:text-indigo-600 transition-colors">
+               <Bell size={20} />
+               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+             </button>
+          </div>
+        </header>
 
-    <p>🏆 <em>Prioritize quarterbacks if you need stability or upside at the position. For flex spots, focus on receivers like Wan’Dale Robinson and Brandin Cooks for immediate impact.</em></p>
-</section>
+        {/* Dynamic Content */}
+        <div className="p-4 lg:p-8 max-w-7xl mx-auto">
+          
+          {/* DASHBOARD VIEW */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard title="League Rank" value="#4" subtext="Playoff Contender" trend="up" color="bg-indigo-500" />
+                <StatCard title="Points For" value="1133.5" subtext="4th in League" trend="up" color="bg-emerald-500" />
+                <StatCard title="Record" value="7-4" subtext="Win Streak: 1" trend="up" color="bg-blue-500" />
+                <StatCard title="Waiver Budget" value="$96" subtext="Remaining FAAB" trend="down" color="bg-orange-500" />
+              </div>
 
+              <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                  <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <h3 className="font-bold text-lg">Standings</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 font-medium">
+                        <tr>
+                          <th className="px-6 py-4">Rank</th>
+                          <th className="px-6 py-4">Team</th>
+                          <th className="px-6 py-4 text-center">Record</th>
+                          <th className="px-6 py-4 text-right">PF</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        {MOCK_TEAMS.map((team) => (
+                          <tr key={team.id} className={`hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${team.id === 4 ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`}>
+                            <td className="px-6 py-4">
+                              <span className={`w-6 h-6 inline-flex items-center justify-center rounded-full text-xs font-bold 
+                                ${team.rank === 1 ? 'bg-yellow-100 text-yellow-700' : 
+                                  team.rank === 2 ? 'bg-gray-100 text-gray-700' : 
+                                  team.rank === 3 ? 'bg-orange-100 text-orange-800' : 'text-slate-500'}`}>
+                                {team.rank}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-8 h-8 rounded-full ${team.avatar}`}></div>
+                                <div>
+                                  <p className="font-bold text-slate-800 dark:text-white">{team.name}</p>
+                                  <p className="text-xs text-slate-400">{team.owner}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center font-medium">{team.wins}-{team.losses}</td>
+                            <td className="px-6 py-4 text-right text-slate-600 dark:text-slate-300">{team.pts}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
-        <!-- Rules Section -->
-        <section id="rules" class="section">
-            <h2>League Rules</h2>
-            <iframe src="https://docs.google.com/document/d/e/2PACX-1vTkFlha5UmqF9QZAD-EkG8VktD4DjIQFTro9BYF7T5Vp8PF0GgfWiNlM-BDuOKEDkq91uiQTVt7sSET/pub?embedded=true">
-            </iframe>
-        </section>
-    </main>
+                <div className="bg-indigo-900 text-white rounded-xl shadow-lg p-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
+                  <h3 className="font-bold text-lg mb-6 relative z-10">This Week's Matchup</h3>
+                  
+                  <div className="flex items-center justify-between mb-8 relative z-10">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold border-2 border-white/20">
+                        AS
+                      </div>
+                      <p className="font-bold text-sm">Hurts So Good</p>
+                      <p className="text-indigo-200 text-xs">7-4</p>
+                    </div>
+                    <div className="text-center px-4">
+                      <span className="text-2xl font-bold font-mono">VS</span>
+                      <p className="text-xs text-indigo-300 mt-1">Final</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-teal-500 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold border-2 border-white/20 shadow-lg shadow-teal-900/50">
+                        IR
+                      </div>
+                      <p className="font-bold text-sm">Injured Reserve</p>
+                      <p className="text-indigo-200 text-xs">2-9</p>
+                    </div>
+                  </div>
 
-    <footer>
-        &copy; 2024 Diab Fantasy Football League. All rights reserved.
-    </footer>
-</body>
-</html>
+                  <div className="space-y-3 relative z-10">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-indigo-200">Score</span>
+                      <span className="font-bold">88.90 - 76.34</span>
+                    </div>
+                    <div className="w-full bg-indigo-800 rounded-full h-2">
+                      <div className="bg-emerald-400 h-2 rounded-full w-[55%]"></div>
+                    </div>
+                    <p className="text-xs text-center text-indigo-300 pt-2">
+                      You won by 12.56 points.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* NEWSLETTER VIEW */}
+          {activeTab === 'newsletter' && (
+            <div className="max-w-3xl mx-auto">
+               <div className="flex justify-between items-center mb-8">
+                 <div>
+                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                     <Newspaper className="text-indigo-600" /> 
+                     League Insider
+                   </h3>
+                   <p className="text-slate-500 text-sm mt-1">Latest news, rumors, and hot takes from league members.</p>
+                 </div>
+                 <button 
+                   onClick={() => writerName ? setIsWriting(!isWriting) : setIsWriterModalOpen(true)}
+                   className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                 >
+                   {isWriting ? <X size={18}/> : <PenTool size={18}/>}
+                   {isWriting ? 'Cancel' : 'Write Article'}
+                 </button>
+               </div>
+
+               {/* Write Article Form */}
+               {isWriting && (
+                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-indigo-100 dark:border-indigo-900 mb-8 animate-in fade-in slide-in-from-top-4">
+                   <h4 className="font-bold text-lg mb-4 text-slate-800 dark:text-white">New Article</h4>
+                   <div className="space-y-4">
+                     <div>
+                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Title</label>
+                       <input 
+                         type="text"
+                         value={newArticle.title}
+                         onChange={(e) => setNewArticle({...newArticle, title: e.target.value})}
+                         placeholder="e.g. Why I'm Trading Justin Jefferson"
+                         className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                       />
+                     </div>
+                     
+                     <div className="grid grid-cols-2 gap-4">
+                        <div>
+                           <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tag</label>
+                           <select 
+                             value={newArticle.tag}
+                             onChange={(e) => setNewArticle({...newArticle, tag: e.target.value})}
+                             className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                           >
+                             <option>News</option>
+                             <option>Rumor</option>
+                             <option>Analysis</option>
+                             <option>Trash Talk</option>
+                             <option>Trade Block</option>
+                           </select>
+                        </div>
+                        <div>
+                           <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Author</label>
+                           <input 
+                             type="text"
+                             value={writerName}
+                             disabled
+                             className="w-full p-3 bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 rounded-lg cursor-not-allowed"
+                           />
+                        </div>
+                     </div>
+
+                     <div>
+                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Content</label>
+                       <textarea 
+                         rows="6"
+                         value={newArticle.content}
+                         onChange={(e) => setNewArticle({...newArticle, content: e.target.value})}
+                         placeholder="Spill the tea..."
+                         className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                       ></textarea>
+                     </div>
+                     
+                     <div className="flex justify-end pt-2">
+                       <button 
+                         onClick={handlePostArticle}
+                         disabled={!newArticle.title || !newArticle.content || isPosting}
+                         className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                       >
+                         {isPosting ? <Activity className="animate-spin" size={18}/> : <ArrowRight size={18}/>}
+                         {isPosting ? 'Publishing...' : 'Publish Article'}
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+               )}
+
+               {/* Articles List */}
+               {articles.length === 0 ? (
+                 <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 border-dashed">
+                    <Newspaper className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                    <h4 className="text-lg font-bold text-slate-600 dark:text-slate-400">No News Yet</h4>
+                    <p className="text-slate-400 text-sm mb-4">Be the first to break a story!</p>
+                    <button 
+                       onClick={() => writerName ? setIsWriting(true) : setIsWriterModalOpen(true)}
+                       className="text-indigo-600 font-medium hover:underline"
+                    >
+                      Write something
+                    </button>
+                 </div>
+               ) : (
+                 <div className="space-y-6">
+                   {articles.map(article => (
+                     <NewsCard key={article.id} article={article} />
+                   ))}
+                 </div>
+               )}
+            </div>
+          )}
+
+          {/* MY TEAM VIEW */}
+          {activeTab === 'myteam' && (
+            <div className="space-y-6">
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                  <h3 className="font-bold text-lg text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    Starters
+                  </h3>
+                  <div className="text-sm text-slate-500">
+                    Score: <span className="font-bold text-slate-900 dark:text-white">88.90</span>
+                  </div>
+                </div>
+                <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                  {activePlayers.map(player => (
+                    <PlayerRow key={player.id} player={player} onAction={togglePlayerStatus} isRoster={true} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                   <h3 className="font-bold text-lg text-slate-600 dark:text-slate-400">Bench</h3>
+                </div>
+                <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                  {benchPlayers.map(player => (
+                    <PlayerRow key={player.id} player={player} onAction={togglePlayerStatus} isRoster={true} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MATCHUPS VIEW */}
+          {activeTab === 'matchups' && (
+            <div className="space-y-4 max-w-3xl mx-auto">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold">League Scoreboard</h3>
+                <p className="text-slate-500">Week {CURRENT_WEEK} Results</p>
+              </div>
+              {WEEKLY_MATCHUPS.map(matchup => (
+                <MatchupRow key={matchup.id} matchup={matchup} />
+              ))}
+            </div>
+          )}
+
+          {/* PLAYERS VIEW */}
+          {activeTab === 'players' && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                 <h3 className="text-xl font-bold">Waiver Wire</h3>
+                 <div className="flex gap-2">
+                    <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">All</button>
+                    <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">QB</button>
+                    <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium shadow-sm">RB</button>
+                    <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">WR</button>
+                 </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                   {WAIVER_WIRE.map(player => (
+                     <div key={player.id} className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                       <div className="flex items-center space-x-4">
+                         <div className="bg-slate-100 dark:bg-slate-700 p-2 rounded text-xs font-bold w-12 text-center">
+                           {player.position}
+                         </div>
+                         <div>
+                           <p className="font-bold text-slate-900 dark:text-white">{player.name}</p>
+                           <p className="text-xs text-slate-500">{player.team} • {player.pctOwned}% Owned</p>
+                         </div>
+                       </div>
+                       <div className="flex items-center gap-6">
+                         <div className="text-right">
+                           <p className="text-xs text-slate-400">Proj</p>
+                           <p className="font-bold text-slate-700 dark:text-slate-300">{player.proj}</p>
+                         </div>
+                         <button className="p-2 bg-emerald-50 text-emerald-600 rounded-full hover:bg-emerald-100 transition-colors">
+                            <UserPlus size={20} />
+                         </button>
+                       </div>
+                     </div>
+                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* CHAT VIEW */}
+          {activeTab === 'chat' && (
+             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 h-[600px] flex flex-col">
+               <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                 <h3 className="font-bold">League Chat</h3>
+                 <span className="text-xs text-green-500 flex items-center gap-1">● 3 Online</span>
+               </div>
+               
+               <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                 {MESSAGES.map(msg => (
+                   <div key={msg.id} className="flex gap-3">
+                     <div className={`w-8 h-8 rounded-full flex-shrink-0 ${msg.avatar}`}></div>
+                     <div>
+                       <div className="flex items-center gap-2">
+                         <span className="font-bold text-sm text-slate-900 dark:text-white">{msg.user}</span>
+                         <span className="text-xs text-slate-400">{msg.time}</span>
+                       </div>
+                       <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 bg-slate-50 dark:bg-slate-700 p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl">
+                         {msg.text}
+                       </p>
+                     </div>
+                   </div>
+                 ))}
+                 
+                 <div className="flex gap-3 flex-row-reverse">
+                     <div className="w-8 h-8 rounded-full flex-shrink-0 bg-emerald-500"></div>
+                     <div className="text-right">
+                       <div className="flex items-center gap-2 justify-end">
+                         <span className="text-xs text-slate-400">10:55 AM</span>
+                         <span className="font-bold text-sm text-slate-900 dark:text-white">AlexSeguin</span>
+                       </div>
+                       <p className="text-white text-sm mt-1 bg-emerald-600 p-3 rounded-tl-xl rounded-bl-xl rounded-br-xl text-left">
+                         Anyone selling a QB2?
+                       </p>
+                     </div>
+                 </div>
+               </div>
+
+               <div className="p-4 border-t border-slate-100 dark:border-slate-700">
+                 <div className="flex gap-2">
+                   <input 
+                     type="text" 
+                     placeholder="Talk smack..." 
+                     className="flex-1 bg-slate-100 dark:bg-slate-900 border-0 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                   />
+                   <button className="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                     <ArrowRight size={20} />
+                   </button>
+                 </div>
+               </div>
+             </div>
+          )}
+
+        </div>
+      </main>
+
+      {/* WRITER NAME MODAL */}
+      {isWriterModalOpen && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-sm shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <User size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">League Login</h3>
+              <p className="text-slate-500 text-sm">Enter your name to post articles.</p>
+            </div>
+            
+            <form onSubmit={handleSetWriterName}>
+              <input 
+                type="text" 
+                placeholder="Your Writer Handle (e.g. Commish)"
+                value={writerName}
+                onChange={(e) => setWriterName(e.target.value)}
+                className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-center"
+                autoFocus
+              />
+              <button 
+                type="submit" 
+                className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors"
+              >
+                Start Writing
+              </button>
+              <button 
+                type="button"
+                onClick={() => setIsWriterModalOpen(false)}
+                className="w-full mt-2 py-2 text-sm text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
