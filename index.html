@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Trophy, 
@@ -17,7 +18,8 @@ import {
   Activity,
   Newspaper,
   PenTool,
-  User
+  User,
+  Eye
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { 
@@ -42,23 +44,68 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-// --- MOCK DATA (Based on Uploaded Images) ---
-const LEAGUE_NAME = "Windsor Dynasty League"; // Inferred context
-const CURRENT_WEEK = 12; // Inferred from records (9-2, 8-3 etc sum to 11 games played)
+// --- MOCK DATA ---
+const LEAGUE_NAME = "Windsor Dynasty League";
+const CURRENT_WEEK = 12;
+
+// Extracted Rosters from Images
+const ROSTER_SCOTT = [
+  { id: 's1', name: "J. Herbert", position: "QB", team: "LAC", score: 3.34, status: "active" },
+  { id: 's2', name: "D. Henry", position: "RB", team: "BAL", score: 19.20, status: "active" },
+  { id: 's3', name: "C. Rodriguez", position: "RB", team: "WAS", score: 9.00, status: "active" },
+  { id: 's4', name: "P. Washington", position: "WR", team: "JAX", score: 3.00, status: "active" },
+  { id: 's5', name: "R. Rice", position: "WR", team: "KC", score: 6.80, status: "active" },
+  { id: 's6', name: "T. Kelce", position: "TE", team: "KC", score: 19.60, status: "active" },
+  { id: 's7', name: "D. London", position: "FLEX", team: "ATL", score: 15.40, status: "active" },
+  { id: 's8', name: "Q. Johnston", position: "FLEX", team: "LAC", score: 0.00, status: "active" }
+];
+
+const ROSTER_PETE = [
+  { id: 'p1', name: "L. Jackson", position: "QB", team: "BAL", score: 4.72, status: "active" },
+  { id: 'p2', name: "A. Jeanty", position: "RB", team: "LV", score: 6.40, status: "active" },
+  { id: 'p3', name: "E. Demercado", position: "RB", team: "ARI", score: 3.00, status: "active" },
+  { id: 'p4', name: "Z. Flowers", position: "WR", team: "BAL", score: 9.80, status: "active" },
+  { id: 'p5', name: "A. Brown", position: "WR", team: "PHI", score: 8.40, status: "active" },
+  { id: 'p6', name: "T. Johnson", position: "TE", team: "NYG", score: 5.10, status: "active" },
+  { id: 'p7', name: "K. Hunt", position: "FLEX", team: "KC", score: 12.70, status: "active" },
+  { id: 'p8', name: "J. Williams", position: "FLEX", team: "DET", score: 17.70, status: "active" }
+];
+
+const ROSTER_ALAN = [
+  { id: 'a1', name: "J. Allen", position: "QB", team: "BUF", score: 42.68, status: "active" },
+  { id: 'a2', name: "Q. Judkins", position: "RB", team: "CLE", score: 5.90, status: "active" },
+  { id: 'a3', name: "R. White", position: "RB", team: "TB", score: 7.20, status: "active" },
+  { id: 'a4', name: "J. Chase", position: "WR", team: "CIN", score: 4.50, status: "active" },
+  { id: 'a5', name: "E. Egbuka", position: "WR", team: "TB", score: 6.50, status: "active" },
+  { id: 'a6', name: "T. McBride", position: "TE", team: "ARI", score: 22.50, status: "active" },
+  { id: 'a7', name: "S. Diggs", position: "FLEX", team: "NE", score: 15.00, status: "active" },
+  { id: 'a8', name: "O. Gadsden", position: "FLEX", team: "LAC", score: 5.10, status: "active" }
+];
+
+const ROSTER_MATTHEW = [
+  { id: 'm1', name: "M. Mariota", position: "QB", team: "WAS", score: 15.42, status: "active" },
+  { id: 'm2', name: "T. Etienne", position: "RB", team: "JAX", score: 19.30, status: "active" },
+  { id: 'm3', name: "S. Barkley", position: "RB", team: "PHI", score: 9.50, status: "active" },
+  { id: 'm4', name: "K. Shakir", position: "WR", team: "BUF", score: 0.20, status: "active" },
+  { id: 'm5', name: "D. Moore", position: "WR", team: "CHI", score: 2.60, status: "active" },
+  { id: 'm6', name: "H. Henry", position: "TE", team: "NE", score: 6.50, status: "active" },
+  { id: 'm7', name: "J. Williams", position: "FLEX", team: "DAL", score: 9.80, status: "active" },
+  { id: 'm8', name: "K. Walker", position: "FLEX", team: "SEA", score: 18.60, status: "active" }
+];
 
 const MOCK_TEAMS = [
   { id: 1, name: "Que Rico!!", owner: "louisdiab", wins: 9, losses: 2, pts: 1028.66, rank: 1, avatar: "bg-indigo-500" },
   { id: 2, name: "Situ's Window Cleaners", owner: "PierreDiab", wins: 8, losses: 3, pts: 1229.30, rank: 2, avatar: "bg-orange-500" },
-  { id: 3, name: "NorkCityBrawlers", owner: "almurrieta22", wins: 8, losses: 3, pts: 1163.50, rank: 3, avatar: "bg-green-600" },
+  { id: 3, name: "NorkCityBrawlers", owner: "Alan (almurrieta22)", wins: 8, losses: 3, pts: 1163.50, rank: 3, avatar: "bg-green-600", roster: ROSTER_ALAN },
   { id: 4, name: "Hurts So Good", owner: "AlexSeguin", wins: 7, losses: 4, pts: 1133.48, rank: 4, avatar: "bg-emerald-500" },
   { id: 5, name: "JustwinBaby!", owner: "paulholub", wins: 7, losses: 4, pts: 1117.72, rank: 5, avatar: "bg-green-400" },
   { id: 6, name: "The Charbonnet Sauvignons", owner: "NickSeguin", wins: 7, losses: 4, pts: 1065.88, rank: 6, avatar: "bg-red-400" },
   { id: 7, name: "Windsor Express", owner: "Grabka", wins: 6, losses: 5, pts: 1093.36, rank: 7, avatar: "bg-purple-500" },
   { id: 8, name: "Minimum Magnets", owner: "thesungawd", wins: 5, losses: 6, pts: 964.22, rank: 8, avatar: "bg-orange-400" },
-  { id: 9, name: "#Tanking", owner: "bdiab", wins: 3, losses: 8, pts: 1103.04, rank: 9, avatar: "bg-blue-400" },
+  { id: 9, name: "#Tanking", owner: "Matthew (bdiab)", wins: 3, losses: 8, pts: 1103.04, rank: 9, avatar: "bg-blue-400", roster: ROSTER_MATTHEW },
   { id: 10, name: "Liam Mastronardi", owner: "LeeMastro", wins: 2, losses: 9, pts: 992.72, rank: 10, avatar: "bg-yellow-500" },
-  { id: 11, name: "Injured Reserve", owner: "ScottyK37", wins: 2, losses: 9, pts: 963.76, rank: 11, avatar: "bg-teal-400" },
-  { id: 12, name: "MCDC", owner: "PeteDiab", wins: 2, losses: 9, pts: 869.56, rank: 12, avatar: "bg-blue-800" },
+  { id: 11, name: "Injured Reserve", owner: "Scott (ScottyK37)", wins: 2, losses: 9, pts: 963.76, rank: 11, avatar: "bg-teal-400", roster: ROSTER_SCOTT },
+  { id: 12, name: "MCDC", owner: "Pete (PeteDiab)", wins: 2, losses: 9, pts: 869.56, rank: 12, avatar: "bg-blue-800", roster: ROSTER_PETE },
 ];
 
 // Alex's Roster (Hurts So Good)
@@ -102,6 +149,27 @@ const MESSAGES = [
   { id: 3, user: "AlexSeguin", text: "Kenny G with 26 points?! Saved my week.", time: "10:48 AM", avatar: "bg-emerald-500" },
 ];
 
+const WEEK_11_RECAP_ARTICLE = {
+  id: "week-11-recap",
+  title: "Week 11 Recap: The Good, The Bad, & The Ugly",
+  content: `Another week of Windsor Dynasty action is in the books, and boy was it spicy. Here's the rundown:
+
+🔥 THE GOOD: NorkCityBrawlers (Alan)
+Josh Allen put the entire franchise on his back with 42.68 points! I don't know what kind of pre-game speech Alan gave, but it worked. The rest of the team basically tailgated while Allen destroyed the stat sheet. 109.38 total points with nearly half coming from one guy? That's efficiency.
+
+❄️ THE BAD: Injured Reserve (Scott)
+Scott, buddy. Justin Herbert with 3.34 points? I've seen kickers with flu games put up better numbers. Losing 76-88 to Alex is tough, but when your QB1 is getting outscored by your bench warmers, it's time to hit the panic button. "Injured Reserve" feels less like a team name and more like a lifestyle choice at this point.
+
+🤡 THE UGLY: MCDC (Pete)
+Pete... we need to talk. 67.82 points? Lamar Jackson with 4.72? Did Lamar decide to play left-handed? Did he leave at halftime? MCDC got absolutely dismantled by #Tanking (Matthew), who dropped 118.36. When you get blown out by 50 points by a team literally named "Tanking", you have to look in the mirror and ask yourself some hard questions.
+
+🏆 HONORABLE MENTION: #Tanking (Matthew)
+Despite the name, Matthew isn't tanking very well. M. Mariota and K. Walker put on a clinic. Maybe change the name to #AccidentallyCompetent?`,
+  tag: "Recap",
+  author: "The Commish",
+  timestamp: { seconds: Date.now() / 1000 }
+};
+
 // --- COMPONENTS ---
 
 const StatCard = ({ title, value, trend, subtext, color }) => (
@@ -136,17 +204,19 @@ const PlayerRow = ({ player, onAction, isRoster }) => {
         </div>
         <div>
           <p className="font-bold text-slate-800 dark:text-white">{player.name}</p>
-          <p className="text-xs text-slate-500">{player.team} • vs {player.opponent || 'BYE'}</p>
+          <p className="text-xs text-slate-500">{player.team} • {player.score ? `Score: ${player.score}` : `vs ${player.opponent}`}</p>
         </div>
       </div>
       
       <div className="flex items-center space-x-6 md:space-x-12">
-        <div className="text-center hidden md:block">
-          <p className="text-xs text-slate-400">Score</p>
-          <p className={`font-medium ${player.score > 15 ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{player.score}</p>
-        </div>
+        {player.score !== undefined && (
+            <div className="text-center hidden md:block">
+            <p className="text-xs text-slate-400">Points</p>
+            <p className={`font-medium ${player.score > 15 ? 'text-emerald-600' : 'text-slate-700 dark:text-slate-300'}`}>{player.score}</p>
+            </div>
+        )}
         
-        {isRoster && (
+        {isRoster && onAction && (
           <button 
             onClick={() => onAction(player.id)}
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors
@@ -158,7 +228,7 @@ const PlayerRow = ({ player, onAction, isRoster }) => {
           </button>
         )}
         
-        {!isRoster && (
+        {!isRoster && !onAction && (
            <button className="p-2 rounded-full hover:bg-emerald-50 text-emerald-600">
              <UserPlus size={18} />
            </button>
@@ -224,10 +294,13 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [writerName, setWriterName] = useState('');
   const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState([WEEK_11_RECAP_ARTICLE]);
   const [isWriting, setIsWriting] = useState(false);
   const [newArticle, setNewArticle] = useState({ title: '', content: '', tag: 'News' });
   const [isPosting, setIsPosting] = useState(false);
+
+  // Modal State for Viewing Teams
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
   // 1. Auth Setup
   useEffect(() => {
@@ -247,7 +320,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // 2. Newsletter Data Fetching
+  // 2. Newsletter Data Fetching (Combines Local Mock + Firebase)
   useEffect(() => {
     if (!user) return;
     
@@ -255,7 +328,8 @@ export default function App() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       fetched.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-      setArticles(fetched);
+      // Merge with the static week 11 recap
+      setArticles([WEEK_11_RECAP_ARTICLE, ...fetched]);
     }, (error) => {
       console.error("Error fetching newsletter:", error);
     });
@@ -430,6 +504,7 @@ export default function App() {
                 <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
                   <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                     <h3 className="font-bold text-lg">Standings</h3>
+                    <span className="text-xs text-slate-400">Click team to view roster</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
@@ -443,7 +518,11 @@ export default function App() {
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                         {MOCK_TEAMS.map((team) => (
-                          <tr key={team.id} className={`hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${team.id === 4 ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`}>
+                          <tr 
+                            key={team.id} 
+                            onClick={() => team.roster ? setSelectedTeam(team) : null}
+                            className={`hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer ${team.id === 4 ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`}
+                          >
                             <td className="px-6 py-4">
                               <span className={`w-6 h-6 inline-flex items-center justify-center rounded-full text-xs font-bold 
                                 ${team.rank === 1 ? 'bg-yellow-100 text-yellow-700' : 
@@ -456,7 +535,10 @@ export default function App() {
                               <div className="flex items-center space-x-3">
                                 <div className={`w-8 h-8 rounded-full ${team.avatar}`}></div>
                                 <div>
-                                  <p className="font-bold text-slate-800 dark:text-white">{team.name}</p>
+                                  <p className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                    {team.name}
+                                    {team.roster && <Eye size={14} className="text-indigo-400" />}
+                                  </p>
                                   <p className="text-xs text-slate-400">{team.owner}</p>
                                 </div>
                               </div>
@@ -801,6 +883,39 @@ export default function App() {
                 Cancel
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* TEAM ROSTER MODAL */}
+      {selectedTeam && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+               <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full ${selectedTeam.avatar}`}></div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">{selectedTeam.name}</h3>
+                    <p className="text-sm text-slate-500">{selectedTeam.owner}</p>
+                  </div>
+               </div>
+               <button onClick={() => setSelectedTeam(null)} className="text-slate-400 hover:text-slate-600">
+                 <X size={24} />
+               </button>
+            </div>
+            
+            <div className="overflow-y-auto flex-1 pr-2">
+               <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+                 {selectedTeam.roster && selectedTeam.roster.map(player => (
+                   <PlayerRow key={player.id} player={player} isRoster={false} />
+                 ))}
+                 {!selectedTeam.roster && (
+                   <div className="p-8 text-center text-slate-500">
+                     Roster data not available for this team.
+                   </div>
+                 )}
+               </div>
+            </div>
           </div>
         </div>
       )}
